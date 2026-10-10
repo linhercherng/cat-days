@@ -1,0 +1,9 @@
+node_modules/
+work/
+.env
+.env.*
+*.pem
+*-backup.json
+cat-days-backup*.json
+.DS_Store
+Thumbs.db
