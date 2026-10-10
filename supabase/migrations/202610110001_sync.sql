@@ -62,7 +62,7 @@ language plpgsql security definer set search_path = '' as $$
 declare v_owner uuid := auth.uid(); v_rows jsonb; v_cursor bigint;
 begin
   if not public.cat_days_allowed() then raise exception 'FORBIDDEN' using errcode = '42501'; end if;
-  if p_after is null or p_after < 0 or p_limit not between 1 and 200 then raise exception 'INVALID_INPUT'; end if;
+  if p_after is null or p_after < 0 or p_limit is null or p_limit not between 1 and 200 then raise exception 'INVALID_INPUT'; end if;
   -- Serialize writes for this owner so a committed lower cursor cannot arrive after a higher one.
   perform pg_advisory_xact_lock(hashtextextended(v_owner::text, 0));
   select coalesce(jsonb_agg(cat_days_private.record_json(q) order by q.change_seq), '[]'::jsonb), coalesce(max(q.change_seq), p_after)
@@ -81,7 +81,7 @@ declare
   v_origin text; v_status text := 'saved';
 begin
   if not public.cat_days_allowed() then raise exception 'FORBIDDEN' using errcode = '42501'; end if;
-  if p_operation is null or p_action not in ('save', 'delete', 'import') or p_action is null
+  if p_operation is null or p_action not in ('save', 'delete', 'import', 'copy', 'marker') or p_action is null
     or p_id is null or length(p_id) not between 1 and 128 or p_expected is null or p_expected < 0 or p_restore is null then raise exception 'INVALID_INPUT'; end if;
   perform pg_advisory_xact_lock(hashtextextended(v_owner::text, 0));
   v_hash := sha256(convert_to(jsonb_build_array(p_action, p_id, p_expected, p_content, p_restore)::text, 'UTF8'));
@@ -92,12 +92,15 @@ begin
     return jsonb_build_object('status', 'replayed', 'record', cat_days_private.record_json(v_result));
   end if;
   select * into v_current from public.cat_days_notes where owner_id = v_owner and id = p_id;
-  if p_action <> 'import' and ((v_current.id is null and p_expected <> 0)
+  if p_action in ('save', 'delete') and ((v_current.id is null and p_expected <> 0)
     or (v_current.id is not null and (v_current.version <> p_expected or v_current.deleted_at is not null))) then
     return jsonb_build_object('status', case when v_current.deleted_at is not null then 'deleted' else 'conflict' end,
       'record', case when v_current.id is null then null else cat_days_private.record_json(v_current) end);
   end if;
-  if p_action = 'delete' then
+  if p_action = 'marker' then
+    -- Backup markers protect a fresh account but never delete current active notes.
+    if v_current.id is not null then v_result := v_current; v_status := 'skipped'; end if;
+  elsif p_action = 'delete' then
     if v_current.id is null then raise exception 'NOT_FOUND'; end if;
   else
     if jsonb_typeof(p_content) is distinct from 'object' or jsonb_typeof(p_content->'date') is distinct from 'string'
@@ -110,6 +113,7 @@ begin
       then raise exception 'INVALID_CONTENT'; end if;
     v_day := (p_content->>'date')::date;
     if v_day not between date '1900-01-01' and date '2100-12-31' then raise exception 'INVALID_DATE'; end if;
+    if p_action = 'copy' then v_id := 'copy:' || p_operation::text; v_origin := p_id; v_status := 'copy'; end if;
     if p_action = 'import' and v_current.id is not null then
       if v_current.deleted_at is not null and not p_restore then
         return jsonb_build_object('status', 'deleted', 'record', cat_days_private.record_json(v_current));
@@ -122,11 +126,14 @@ begin
     end if;
   end if;
   if v_result.id is null then
-    if p_action <> 'delete' and (v_current.id is null or v_id <> p_id)
+    if p_action not in ('delete','marker') and (v_current.id is null or v_id <> p_id)
       and (select count(*) from public.cat_days_notes where owner_id = v_owner and deleted_at is null) >= 5000 then raise exception 'NOTE_LIMIT'; end if;
     insert into cat_days_private.counters(owner_id, value) values (v_owner, 1)
       on conflict(owner_id) do update set value = cat_days_private.counters.value + 1 returning value into v_seq;
-    if p_action = 'delete' then
+    if p_action = 'marker' then
+      insert into public.cat_days_notes(owner_id, id, version, change_seq, deleted_at)
+        values(v_owner, v_id, 1, v_seq, clock_timestamp()) returning * into v_result;
+    elsif p_action = 'delete' then
       update public.cat_days_notes set day = null, body = null, mood = null, mood_text = null, origin_id = null,
         version = version + 1, change_seq = v_seq, updated_at = clock_timestamp(), deleted_at = clock_timestamp()
         where owner_id = v_owner and id = p_id returning * into v_result;

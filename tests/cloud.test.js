@@ -49,3 +49,59 @@ test('invalid server response does not advance cursor or remove notes', async ()
  response={records:[{...record('a',2),text:42}],cursor:2,hasMore:false};
  await assert.rejects(a.sync()); assert.equal(a.read().notes[0].text,'甲');
 });
+test('a lost save followed by deletion keeps draft instead of reporting saved',async()=>{
+ const disk=storage();let request,attempt=0;
+ const rpc=async(_name,args)=>{if(!attempt++){request=args;throw Error('lost');}return {status:'replayed',record:{...record(request.p_id,2),date:null,text:null,mood:null,moodText:null,deletedAt:at}};};
+ const a=createCloudStore({owner:'owner',storage:disk,rpc});
+ const d=await a.saveDraft({id:'new',slot:'new',noteId:null,...content});
+ await assert.rejects(a.saveNote(content,null,d));
+ await assert.rejects(a.saveNote(content,null,d),CloudConflict);
+ assert.equal(a.read().drafts[0].text,'甲');assert.equal(a.read().notes.length,0);
+});
+test('logout during a slow response cannot repopulate old account data',async()=>{
+ let resolve;
+ const a=createCloudStore({owner:'owner',storage:storage(),rpc:()=>new Promise(r=>{resolve=r;})});
+ const pending=a.sync();await new Promise(r=>setImmediate(r));a.close();
+ resolve({records:[record('a',1)],cursor:1,hasMore:false});
+ await assert.rejects(pending,/登入/);assert.throws(()=>a.read(),/登入/);
+});
+test('editing input after an uncertain new save updates its confirmed ID, not a duplicate',async()=>{
+ const disk=storage();let first,attempt=0;const requests=[];
+ const rpc=async(_name,args)=>{
+   requests.push(args);
+   if(!attempt++){first=args;throw Error('lost response after commit');}
+   if(args.p_operation===first.p_operation)return {status:'replayed',record:record(first.p_id,1)};
+   assert.equal(args.p_id,first.p_id);assert.equal(args.p_expected,1);
+   return {status:'saved',record:record(first.p_id,2,'修改後的輸入')};
+ };
+ const a=createCloudStore({owner:'owner',storage:disk,rpc});
+ let d=await a.saveDraft({id:'new',slot:'new',noteId:null,...content});
+ await assert.rejects(a.saveNote(content,null,d));
+ d=await a.saveDraft({...d,text:'修改後的輸入'},d);
+ const result=await a.saveNote({...content,text:'修改後的輸入'},null,d);
+ assert.equal(result.id,first.p_id);assert.equal(a.read().notes.length,1);assert.equal(a.read().drafts.length,0);
+});
+test('confirmed new-save ID survives a failure before sending updated content',async()=>{
+ const disk=storage(),originalSet=disk.setItem;let failUpdated=false,first,attempt=0;
+ disk.setItem=(k,v)=>{if(failUpdated && JSON.parse(v).pending.some(p=>p.request.p_content?.text==='修改後的輸入')){failUpdated=false;throw Error('disk full');}originalSet(k,v);};
+ const rpc=async(_name,args)=>{
+   if(!attempt++){first=args;throw Error('lost');}
+   if(args.p_operation===first.p_operation)return {status:'replayed',record:record(first.p_id,1)};
+   assert.equal(args.p_id,first.p_id);assert.equal(args.p_expected,1);return {status:'saved',record:record(first.p_id,2,'修改後的輸入')};
+ };
+ const a=createCloudStore({owner:'owner',storage:disk,rpc});let d=await a.saveDraft({id:'new',slot:'new',noteId:null,...content});
+ await assert.rejects(a.saveNote(content,null,d));
+ d=await a.saveDraft({...d,text:'修改後的輸入'},d);failUpdated=true;
+ await assert.rejects(a.saveNote({...content,text:'修改後的輸入'},null,d),/disk/);
+ const b=createCloudStore({owner:'owner',storage:disk,rpc});const restored=b.read().drafts[0];
+ assert.equal(restored.savedId,first.p_id);
+ const saved=await b.saveNote({...content,text:'修改後的輸入'},null,restored);assert.equal(saved.id,first.p_id);assert.equal(b.read().drafts.length,0);
+});
+test('another tab changing draft content still blocks stale draft overwrite',async()=>{
+ const disk=storage();const args={owner:'owner',storage:disk,rpc:async()=>{}};
+ const a=createCloudStore(args),b=createCloudStore(args);
+ const d=await a.saveDraft({id:'new',slot:'new',noteId:null,...content});
+ await b.saveDraft({...d,text:'另一分頁'},d);
+ await assert.rejects(a.saveDraft({...d,text:'本分頁'},d),/其他分頁/);
+ assert.equal(a.read().drafts[0].text,'另一分頁');
+});

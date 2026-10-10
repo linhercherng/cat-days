@@ -21,6 +21,17 @@ do $$declare a jsonb; b jsonb; c jsonb; begin
  c := public.cat_days_changes(0,1);
  if jsonb_array_length(c->'records') <> 1 or not (c->>'hasMore')::boolean then raise exception 'pagination failed'; end if;
  if (select count(*) from public.cat_days_notes) <> 2 then raise exception 'unexpected note count'; end if;
+ b := public.cat_days_write('10000000-0000-0000-0000-000000000009','copy','note-a',0,'{"date":"2026-10-11","text":"明確另存","mood":"","moodText":""}');
+ if b#>>'{record,originId}' <> 'note-a' or b#>>'{record,id}' = 'note-a' then raise exception 'explicit recovery resurrected ID'; end if;
+ a := public.cat_days_write('10000000-0000-0000-0000-000000000010','marker','backup-deleted',0);
+ if a#>>'{record,deletedAt}' is null then raise exception 'backup marker lost'; end if;
+ b := public.cat_days_write('10000000-0000-0000-0000-000000000011','marker','copy:10000000-0000-0000-0000-000000000009',0);
+ if b#>>'{record,deletedAt}' is not null or b->>'status' <> 'skipped' then raise exception 'backup marker deleted active note'; end if;
+ begin perform public.cat_days_changes(0,null); raise exception 'null pagination accepted'; exception when raise_exception then if SQLERRM <> 'INVALID_INPUT' then raise; end if; end;
+ begin
+   perform public.cat_days_write('10000000-0000-0000-0000-000000000001','save','note-a',0,'{"date":"2026-10-11","text":"different request","mood":"","moodText":""}');
+   raise exception 'operation reused accepted';
+ exception when raise_exception then if SQLERRM <> 'OPERATION_REUSED' then raise; end if; end;
  begin
    perform public.cat_days_write('10000000-0000-0000-0000-000000000008','save','bad',0,jsonb_build_object('date','2026-10-11','text',repeat('🐱',10001),'mood','','moodText',''));
    raise exception 'length accepted';

@@ -1,4 +1,5 @@
 import { authStorage } from './auth-storage.js';
+import { timedFetch } from './network.js';
 export function validCloudConfig(config) {
   return /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config?.url || '') && /^sb_publishable_[A-Za-z0-9_-]+$/.test(config?.publishableKey || '');
 }
@@ -6,7 +7,7 @@ export async function createCloudAuth(config) {
   if (!validCloudConfig(config)) throw Error('雲端尚未設定；本機記事功能仍可使用。');
   const {createClient}=await import('../assets/vendor/supabase.js');
   const storage=authStorage(window.sessionStorage);
-  const client=createClient(config.url,config.publishableKey,{auth:{storage,storageKey:'cat-days-auth',persistSession:true,flowType:'pkce',detectSessionInUrl:false,autoRefreshToken:true}});
+  const client=createClient(config.url,config.publishableKey,{global:{fetch:timedFetch(window.fetch.bind(window))},auth:{storage,storageKey:'cat-days-auth',persistSession:true,flowType:'pkce',detectSessionInUrl:false,autoRefreshToken:true}});
   const rpc=async (name,args={})=>{
     if (!navigator.onLine) throw Error('目前離線。草稿仍在此裝置，連線後請再按一次儲存。');
     const {data,error}=await client.rpc(name,args);

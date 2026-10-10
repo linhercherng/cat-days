@@ -38,6 +38,9 @@ export async function importOperation(owner,item,restore=false) {
 }
 export async function importCloudBackup(store,incoming,{restore=false,progress=()=>{}}={}) {
   const counts={saved:0,skipped:0,copies:0,deleted:0,drafts:0,total:incoming.notes.length};
+  for(const marker of incoming.tombstones || []) {
+    await store.importTombstone(marker,await importOperation(store.owner,{id:`marker:${marker.id}`,date:'',text:'',mood:'',moodText:''}));
+  }
   for (const item of incoming.notes) {
     try {
       const reply=await store.importNote(item,{restore,operation:await importOperation(store.owner,item,restore)});
