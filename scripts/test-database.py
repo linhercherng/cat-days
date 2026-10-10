@@ -28,4 +28,4 @@ try:
     assert statuses.count('saved')==1 and statuses.count('conflict')==7, statuses
     print('PASS: 8 concurrent devices, exactly one save and seven conflicts')
 finally:
-    subprocess.run(['docker','rm','-f',name],capture_output=True)
+    subprocess.run(['docker','rm','-f','-v',name],capture_output=True)
