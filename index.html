@@ -13,7 +13,7 @@
 <body>
   <a class="skip-link" href="#main-content">跳至主要內容</a>
   <div class="app">
-    <div class="prototype-strip">V1 資料驗收版 · 記事只保存在這個瀏覽器</div>
+    <div class="prototype-strip">V1 日期與節日驗收版 · 記事只保存在這個瀏覽器</div>
     <header class="brand-header">
       <a class="brand" href="#home" aria-label="貓咪手帳，回首頁"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#paw"/></svg>貓咪手帳</a>
       <span class="header-caption">把日子，慢慢記下</span>
@@ -69,6 +69,29 @@
         <a class="back-link" href="#home">‹ 本週記事</a>
         <div class="page-title"><p class="eyebrow">KEEP YOUR LITTLE DAYS</p><h1 id="data-title" tabindex="-1">資料與備份</h1><p>留一份備份，讓小日子安心一點。</p></div>
         <div id="data-content"></div>
+      </section>
+      <section id="find" data-view aria-labelledby="find-title" hidden>
+        <a class="back-link" id="find-back" href="#home">‹ 返回</a>
+        <div class="page-title"><p class="eyebrow">FIND A LITTLE DAY</p><h1 id="find-title" tabindex="-1">找日期</h1><p>想回顧哪一天，或看看未來的日子？</p></div>
+        <form id="find-form" class="data-card" novalidate>
+          <div class="field"><label for="lookup-date">想找哪一天？</label><input id="lookup-date" type="date" min="1900-01-01" max="2100-12-31" required aria-describedby="lookup-help lookup-error"><span id="lookup-help" class="field-help">可輸入或選擇日期，支援 1900～2100 年。</span></div>
+          <p id="lookup-error" class="error-banner" role="alert" hidden></p>
+          <p id="lookup-preview" class="muted" aria-live="polite"></p>
+          <div class="tool-actions"><button id="lookup-today" type="button" class="text-button">選今天</button><button type="submit" class="primary">前往這一天</button></div>
+        </form>
+      </section>
+      <section id="interval" data-view aria-labelledby="interval-title" hidden>
+        <a class="back-link" href="#calendar">‹ 回月曆</a>
+        <div class="page-title"><p class="eyebrow">COUNT THE LITTLE DAYS</p><h1 id="interval-title" tabindex="-1">算天數</h1><p>兩個日期，相隔幾天？</p></div>
+        <div class="data-card">
+          <div class="field"><label for="interval-start">開始日期</label><input id="interval-start" type="date" min="1900-01-01" max="2100-12-31" required aria-describedby="interval-help interval-error"></div>
+          <div class="field"><label for="interval-end">結束日期</label><input id="interval-end" type="date" min="1900-01-01" max="2100-12-31" required aria-describedby="interval-help interval-error"></div>
+          <p id="interval-help" class="field-help">選好兩天即自動計算。包含週末與假日，不是工作天數。</p>
+          <p id="interval-error" class="error-banner" role="alert" hidden></p>
+          <button id="swap-dates" type="button" class="primary" hidden>交換日期</button>
+        </div>
+        <div id="interval-result" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div id="interval-days" class="tool-actions"></div>
       </section>
     </main>
     <footer class="dock" id="main-dock"><nav class="dock-nav" aria-label="主要功能"><a class="primary" href="#editor"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#plus"/></svg>記一筆</a><a href="#calendar"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#calendar"/></svg>看月曆</a><button id="find-date"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#search"/></svg>找日期</button></nav><p class="dock-caption">小小的記錄，也是生活的痕跡。</p></footer>

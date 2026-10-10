@@ -20,7 +20,7 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; }
-button, input, textarea { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
 button { color: inherit; cursor: pointer; }
@@ -216,3 +216,28 @@ button:disabled { opacity: .55; }
 #dialog-actions { display: grid; gap: 8px; }
 dialog p { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 45dvh; overflow-y: auto; }
 dialog { max-height: 85dvh; overflow-y: auto; }
+.month-picker { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 8px 0 20px; }
+.month-picker label { font-size: 14px; }
+.month-picker input, .month-picker select { display: block; width: 100%; min-width: 0; min-height: 48px; padding: 10px 12px; margin-top: 6px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--surface); }
+.month-picker button { grid-column: 1 / -1; border: 1px solid var(--line); }
+.legend { flex-wrap: wrap; }
+.legend-holiday { width: 12px; height: 3px; background: var(--accent); }
+.holiday-mark { position: absolute; bottom: 8px; left: 7px; width: 10px; height: 3px; border-radius: 2px; background: var(--accent); }
+.work-mark { position: absolute; bottom: 3px; left: 4px; font-size: 10px; color: var(--green); }
+.holiday-panel { background: var(--green-soft); padding: 16px; border-radius: 10px; margin: 16px 0; overflow-wrap: anywhere; }
+.holiday-panel .pill { background: var(--surface); font-size: 12px; margin-right: 4px; }
+.holiday-source { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; color: var(--green); text-decoration: underline; }
+a.tool-row { display: flex; align-items: center; min-height: 52px; }
+.tool-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+.tool-actions .primary { width: auto; flex: 1; }
+.data-card .error-banner { margin: 12px 0; }
+.count-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 20px; }
+.count-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--green-soft); padding: 16px; }
+.count-card:last-child { background: var(--peach); }
+.count-card h2 { font-size: 16px; }
+.count-number { font-family: Georgia, serif; font-size: 34px; color: var(--ink); overflow-wrap: anywhere; }
+.count-number span { font-size: 16px; }
+.count-card > p:last-child { font-size: 13px; color: var(--muted); }
+.tool-day-link { display: flex; align-items: center; width: 100%; min-height: 48px; padding: 12px; color: var(--green); border: 1px solid var(--line); border-radius: 10px; font-size: 14px; }
+select:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+@media (max-width: 359px) { .count-grid { grid-template-columns: 1fr; } }
