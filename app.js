@@ -7,10 +7,15 @@ import { createEditor } from './src/editor.js';
 import { createDataPanel } from './src/data-panel.js';
 import { createTools } from './src/tools-panel.js';
 import { loadHolidays } from './src/holidays.js';
+import { cloudConfig } from './cloud-config.js';
+import { createSyncPanel } from './src/sync-panel.js';
+import { createCloudDataPanel } from './src/cloud-data-panel.js';
 // The storage getter can itself throw in restricted browser environments.
 const storage = { getItem: key => window.localStorage.getItem(key), setItem: (key, value) => window.localStorage.setItem(key, value) };
 const lock = task => navigator.locks ? navigator.locks.request(KEY, task) : Promise.resolve(task());
-const store = createStore(storage, { lock });
+const localStore = createStore(storage, { lock });
+let cloudStore = null;
+const store = new Proxy({}, { get(_target, key) { const active = cloudStore || localStore; const value = active[key]; return typeof value === 'function' ? value.bind(active) : value; } });
 history.scrollRestoration = 'manual';
 window.addEventListener('load', () => requestAnimationFrame(() => window.scrollTo(0, 0)), { once: true });
 let view = '', lastHash = '#home', week = taiwanToday(), month = week, selectedDay = week;
@@ -35,7 +40,12 @@ function replaceRoute(hash) {
   history.replaceState(null, '', hash); lastHash = hash; scrollPositions.set(hash, position);
 }
 const editor = createEditor(store, { ask, status, go, today: taiwanToday });
-const data = createDataPanel(store, { ask, status });
+const localData = createDataPanel(localStore, { ask, status });
+const sync = createSyncPanel({config:cloudConfig,storage,localStore,ask,status,
+  setCloud:value=>{cloudStore=value;updateModeCaption();},onUpdate:()=>{if(view==='editor')editor.notifyExternal();else if(view!=='data' && view!=='sync')refresh();},
+  guard:async()=>{await editor.flush();if(editor.isBusy() || editor.hasUnsaved()){status('請先保留或完成目前輸入，再登入／登出。');return false;}return true;}});
+const cloudData = createCloudDataPanel(store, {ask,status,onBusy:sync.setBusy});
+const data = { render:()=>cloudStore ? cloudData.render() : localData.render() };
 const tools = createTools({ go, replaceRoute, today: taiwanToday });
 async function fetchHolidays() {
   holidayError = false;
@@ -46,8 +56,12 @@ function read() {
   try { const value = store.read(); $('#storage-error').hidden = true; return value; }
   catch (e) { $('#storage-error').textContent = e.message; $('#storage-error').hidden = false; return emptyState(); }
 }
+function updateModeCaption() {
+  $('.prototype-strip').textContent = cloudStore ? '雲端記事 · 草稿只留在這台裝置' : '本機記事 · 可從「帳號與同步」設定跨裝置保存';
+}
 function refresh() {
   const state = read(), today = taiwanToday();
+  updateModeCaption();
   if (view === 'home') {
     $('#home-month').textContent = today.slice(0, 7); $('#home-today').textContent = `今天是 ${dateLabel(today)}。`;
     renderWeek($('#week-content'), state, week, today, date => { week = date; replaceRoute(`#home?week=${week}`); refresh(); });
@@ -55,11 +69,12 @@ function refresh() {
     renderMonth($('#month-content'), state, month, today, date => { month = date; replaceRoute(`#calendar?month=${month}`); refresh(); }, holidays, holidayError);
   } else if (view === 'day') renderDay($('#day-content'), state, selectedDay, today, date => go(`${dayURL(date)}&back=${encodeURIComponent(dayBack)}`), holidays, holidayError, fetchHolidays);
   else if (view === 'data') data.render();
+  else if (view === 'sync') sync.render();
 }
 async function navigate() {
   const targetHash = location.hash || '#home';
   await editor.flush();
-  if (editor.isBusy()) {
+  if (editor.isBusy() || sync.isBusy()) {
     changingView = false;
     history.replaceState(null, '', lastHash);
     status('正在處理記事，完成後即可離開。');
@@ -73,7 +88,7 @@ async function navigate() {
   }
   const [name, query = ''] = targetHash.slice(1).split('?');
   if (name === 'main-content') { changingView = false; $('#main-content').focus(); return; }
-  const next = ['home', 'calendar', 'day', 'editor', 'data', 'find', 'interval'].includes(name) ? name : 'home';
+  const next = ['home', 'calendar', 'day', 'editor', 'data', 'find', 'interval', 'sync'].includes(name) ? name : 'home';
   const params = new URLSearchParams(query);
   if (next === 'editor') status('');
   const requestedDate = params.get('date');
@@ -112,7 +127,8 @@ async function navigate() {
   });
 }
 window.addEventListener('hashchange', () => { navigation = navigation.then(navigate).catch(e => status(e.message)); });
-window.addEventListener('storage', event => { if (event.key !== KEY && event.key !== null) return; if (view === 'editor') editor.notifyExternal(); else { refresh(); status('已更新其他分頁的資料。'); } });
+window.addEventListener('storage', event => { if (event.key !== KEY && event.key !== sync.storageKey() && event.key !== null) return; if (view === 'editor') editor.notifyExternal(); else { refresh(); status('已更新其他分頁的資料。'); } });
+window.addEventListener('cat-days:saved',()=>sync.changed());
 window.addEventListener('beforeunload', event => { if (editor.hasUnsaved()) { event.preventDefault(); event.returnValue = ''; } });
 window.addEventListener('pageshow', event => { if (event.persisted && view !== 'editor') refresh(); });
 $('#find-date').addEventListener('click', () => go(`#find?back=${encodeURIComponent(view === 'calendar' ? '#calendar' : '#home')}`));
@@ -127,5 +143,5 @@ function updateToday() {
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) updateToday(); });
 setInterval(updateToday, 60000);
-navigation = navigate().catch(e => status(e.message));
+navigation = sync.initialize().then(navigate).catch(e => status(e.message));
 fetchHolidays();

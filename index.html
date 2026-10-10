@@ -19,6 +19,7 @@
       <span class="header-caption">把日子，慢慢記下</span>
     </header>
     <p id="storage-error" class="error-banner" role="alert" hidden></p>
+    <p id="cloud-status" class="sync-indicator" role="status" hidden></p>
     <p id="app-status" class="app-status" role="status" hidden></p>
     <main id="main-content" tabindex="-1">
       <section id="home" data-view aria-labelledby="home-title">
@@ -32,7 +33,7 @@
         <p id="cat-message" class="cat-message" role="status" hidden>「記下一點點也很好。」</p>
         <div class="section-label"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg><h2>這一週的小日子</h2></div>
         <div id="week-content"></div>
-        <div class="page-bottom"><a class="text-button" href="#data">資料與備份</a></div>
+        <div class="page-bottom"><a class="text-button" href="#data">資料與備份</a><a class="text-button" href="#sync">帳號與同步</a></div>
       </section>
       <section id="calendar" data-view aria-labelledby="calendar-title" hidden>
         <a class="back-link" href="#home">‹ 本週記事</a>
@@ -48,6 +49,7 @@
         <div class="page-title editor-title"><div><p class="eyebrow">A NOTE TO YOURSELF</p><h1 id="editor-title" tabindex="-1">記一筆</h1><p>小事、心情，想到什麼就寫什麼。</p></div><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg></div>
         <div id="draft-choice" class="draft-banner" hidden></div>
         <p id="editor-error" class="error-banner" role="alert" hidden></p>
+        <div id="conflict-choice" class="draft-banner" role="region" aria-label="同步衝突處理" hidden></div>
         <form id="note-form" novalidate>
           <fieldset id="editor-fields" class="editor-fields">
             <div class="field"><label for="note-date">記在哪一天？</label><input id="note-date" name="date" type="date" required min="1900-01-01" max="2100-12-31"><span class="field-help">預設今天，也可以換成其他日期（1900～2100 年）。</span></div>
@@ -69,6 +71,11 @@
         <a class="back-link" href="#home">‹ 本週記事</a>
         <div class="page-title"><p class="eyebrow">KEEP YOUR LITTLE DAYS</p><h1 id="data-title" tabindex="-1">資料與備份</h1><p>留一份備份，讓小日子安心一點。</p></div>
         <div id="data-content"></div>
+      </section>
+      <section id="sync" data-view aria-labelledby="sync-title" hidden>
+        <a class="back-link" href="#home">‹ 本週記事</a>
+        <div class="page-title"><p class="eyebrow">YOUR DAYS, TOGETHER</p><h1 id="sync-title" tabindex="-1">帳號與同步</h1><p>換一台裝置，繼續記下小日子。</p></div>
+        <div id="sync-content"></div>
       </section>
       <section id="find" data-view aria-labelledby="find-title" hidden>
         <a class="back-link" id="find-back" href="#home">‹ 返回</a>

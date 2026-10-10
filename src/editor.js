@@ -2,6 +2,7 @@ import { $, el, button } from './dom.js';
 import { MOODS, fields } from './schema.js';
 import { isValidDate } from './dates.js';
 import { dayURL } from './views.js';
+import { CloudConflict } from './cloud-store.js';
 export function createEditor(store, { ask, status, go, today }) {
   let context = null, mood = '';
   const error = message => { $('#editor-error').textContent = message; $('#editor-error').hidden = !message; };
@@ -15,6 +16,23 @@ export function createEditor(store, { ask, status, go, today }) {
     $('#mood-text').value = value.moodText; setMood(value.mood);
   }
   const input = () => ({ date: $('#note-date').value, text: $('#note-text').value, mood, moodText: $('#mood-text').value });
+  function showConflict(ctx, conflict) {
+    const choice = $('#conflict-choice'); choice.hidden = false;
+    choice.replaceChildren(el('h2', {}, conflict.record?.deletedAt ? '雲端已刪除這筆記事' : '兩台裝置都修改了這一天'),
+      el('p', {}, conflict.message));
+    if (conflict.record && !conflict.record.deletedAt) choice.append(el('p', {class:'draft-excerpt'}, `雲端：${(conflict.record.text || conflict.record.moodText || conflict.record.mood).slice(0,240)}`));
+    choice.append(button(conflict.record?.deletedAt ? '另存為新記事' : '保留兩份', async()=>{
+      if(ctx.busy)return;
+      busy(ctx,true);await ctx.queue;
+      try { const saved=await store.keepBoth(input(),ctx.draft,ctx.note?.id);ctx.unsaved=false;context=null;choice.hidden=true;status('目前內容已另存新記事，雲端原稿保留。');window.dispatchEvent(new Event('cat-days:saved'));go(dayURL(saved.date)); }
+      catch(e){error(e.message);}finally{busy(ctx,false);}
+    },'primary'),button('使用雲端版本',async()=>{
+      if(ctx.busy || !await ask('捨棄目前草稿，使用雲端版本？','目前輸入會移除，保留雲端最新狀態（也可能已刪除）。','使用雲端版本'))return;
+      busy(ctx,true);await ctx.queue;
+      try {await store.sync();if(ctx.draft)await store.discardDraft(ctx.draft);ctx.unsaved=false;context=null;choice.hidden=true;status('已採用雲端最新狀態。');go(dayURL(input().date));}
+      catch(e){error(e.message);}finally{busy(ctx,false);}
+    }));
+  }
   function busy(ctx, value) {
     ctx.busy = value;
     if (context !== ctx) return;
@@ -54,9 +72,10 @@ export function createEditor(store, { ask, status, go, today }) {
       const first = !store.read().noticeShown;
       const saved = await store.saveNote(input(), ctx.note, ctx.draft);
       ctx.unsaved = false; context = null;
-      status(first ? '記事已儲存。資料只在目前瀏覽器，更換裝置不會自動同步；可從「資料與備份」下載備份。' : '記事已儲存。');
+      status(store.kind === 'cloud' ? '記事已儲存到雲端。' : first ? '記事已儲存。資料只在目前瀏覽器，更換裝置不會自動同步；可從「資料與備份」下載備份。' : '記事已儲存。');
+      window.dispatchEvent(new Event('cat-days:saved'));
       go(dayURL(saved.date));
-    } catch (e) { error(e.message); }
+    } catch (e) { error(e.message); if(e instanceof CloudConflict)showConflict(ctx,e); }
     finally { busy(ctx, false); }
   });
   $('#discard-draft').addEventListener('click', async () => {
@@ -76,17 +95,22 @@ export function createEditor(store, { ask, status, go, today }) {
     if (!await ask('刪除這筆記事？', `${ctx.note.date}\n${excerpt}\n\n刪除後無法復原，這筆記事的編輯草稿也會移除。`, '刪除記事')) return;
     busy(ctx, true); await ctx.queue;
     try {
-      await store.deleteNote(ctx.note); ctx.unsaved = false; context = null;
+      await store.deleteNote(ctx.note);
+      if(store.kind === 'cloud' && ctx.draft) await store.discardDraft(ctx.draft);
+      ctx.unsaved = false; context = null;
+      window.dispatchEvent(new Event('cat-days:saved'));
       status('記事已刪除。'); go(dayURL(ctx.note.date));
-    } catch (e) { error(e.message); } finally { busy(ctx, false); }
+    } catch (e) { error(e.message); if(e instanceof CloudConflict)showConflict(ctx,e); } finally { busy(ctx, false); }
   });
   return {
     async flush() { if (context) await context.queue; },
     isBusy() { return Boolean(context?.busy); },
     hasUnsaved() { return Boolean(context?.unsaved); },
-    notifyExternal() { if (context) error('其他分頁的資料已有變動。目前輸入保留在畫面中；儲存前會檢查是否衝突。'); },
+    notifyExternal() { if (context) error('雲端或其他分頁的資料已有變動。目前輸入保留在畫面中；儲存前會檢查是否衝突。'); },
     open(params, state, back) {
       error('');
+      $('#conflict-choice').hidden = true;
+      $('.storage-note p').textContent = store.kind === 'cloud' ? '草稿只留在此帳號的這台裝置；按「儲存記事」才上傳雲端，需要網路。' : '草稿會暫存在這個瀏覽器；按「儲存記事」才會成為正式記事。更換裝置不會自動同步。';
       const noteId = params.get('id'), recoveryId = params.get('draft');
       const note = noteId ? state.notes.find(n => n.id === noteId) : null;
       const recovery = recoveryId ? state.drafts.find(d => d.id === recoveryId && d.slot === 'recovery') : null;
@@ -95,7 +119,7 @@ export function createEditor(store, { ask, status, go, today }) {
       const savedDraft = invalid ? null : state.drafts.find(d => d.id === draftId) || null;
       const date = isValidDate(params.get('date')) ? params.get('date') : today();
       const original = note || { date, text: '', mood: '', moodText: '' };
-      context = { note, noteId: recovery?.noteId || note?.id || null, draftId, slot: recovery ? 'recovery' : note ? 'edit' : 'new', originId: recovery?.originId, draft: savedDraft, queue: Promise.resolve(), sequence: 0, ready: !savedDraft && !invalid, unsaved: false, busy: false, back };
+      context = { note:note && savedDraft?.baseVersion ? {...note,version:savedDraft.baseVersion} : note, noteId: recovery?.noteId || note?.id || null, draftId, slot: recovery ? 'recovery' : note ? 'edit' : 'new', originId: recovery?.originId, draft: savedDraft, queue: Promise.resolve(), sequence: 0, ready: !savedDraft && !invalid, unsaved: false, busy: false, back };
       fill(original);
       $('#editor-title').textContent = note ? '編輯記事' : recovery ? '恢復匯入草稿' : '記一筆';
       $('#editor-back').href = back;
