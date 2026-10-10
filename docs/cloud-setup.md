@@ -1,6 +1,10 @@
 # 貓咪手帳：雲端啟用步驟
 
-目前程式已提供同步功能，但 cloud-config.js 保持停用。必須完成真實設定與驗收，才能讓兩台電腦讀到相同資料。
+目前程式已提供同步功能，feature/cloud-sync 的 cloud-config.js 已填入使用者提供的公開設定，正式網站尚未部署此分支。必須完成真實設定與驗收，才能讓兩台電腦讀到相同資料。
+
+2026-10-11 已確認專案 `osvbnbzadifspnbgclld` 可連線；Auth API 顯示 Google Provider 尚未啟用，同步物件也尚未出現在 API。Supabase 控制台帳號及專案成員名單，不等於本網站的 Google Provider 與資料庫允許名單。
+
+此專案 Google OAuth 的 Authorized redirect URI：`https://osvbnbzadifspnbgclld.supabase.co/auth/v1/callback`。網站 Site URL 與允許的 Redirect URL：`https://linhercherng.github.io/cat-days/`。
 
 1. 在你持有的 Supabase 帳號建立 Free 專案，選擇合適地區。專案資料庫密碼自己保管；不要貼到 Chat 或 GitHub。若要註冊帳號與接受服務條款，請由你本人完成。
 2. 在 SQL Editor 執行 `supabase/migrations/202610110001_sync.sql`。這是首次安裝 migration，重複執行會報物件已存在；不要刪表重跑。

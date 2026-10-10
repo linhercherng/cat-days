@@ -4,7 +4,7 @@
 
 ## 已完成
 
-- 2026-10-11 使用者確認記憶體登入取捨，並回報 Supabase 專案與 Google OAuth 都已設定。公開連線設定尚未填入本機；資料庫 migration、允許名單與實際登入仍待驗證。
+- 2026-10-11 使用者確認記憶體登入取捨，並提供公開 project URL／publishable key，已填入分支設定。使用者回報只允許專案建立本人；資料庫允許名單仍待實際驗證。
 - Google PKCE 回呼、公開設定檢查、登入憑證記憶體保存與十分钟 PKCE verifier 到期清理。依 SDK 2.108.1 實際介面製作，SDK 封裝在 repo，不從 CDN 載入。
 - 私人單帳號允許名單、Google verified email 檢查、RLS、禁用直接資料表寫入；所有寫入走權限／版本檢查 RPC。
 - 單帳號交易鎖與遞增游標、200 筆分頁、伺服器版本 CAS、操作冪等及遺失回覆重試。
@@ -27,6 +27,8 @@
 
 ## 仍待驗收
 
+- 2026-10-11 真實 API 連線：`/auth/v1/settings` 回覆 HTTP 200，但 `external.google=false`；`cat_days_allowed`／`cat_days_changes` 回覆 HTTP 404、PGRST202，`cat_days_notes` 回覆 HTTP 404、PGRST205。這是同步物件尚未出現在 API 的證據，不能當作匿名權限測試通過。未傳送或寫入任何記事。
+- 指定專案控制台在目前驗收瀏覽器尚未登入，需由使用者完成登入，才能協助檢查 migration 與允許名單。Google client secret 只由使用者填入 Provider 頁面。
 - 真實 Supabase project 的 migration、指定帳號允許名單及完整 API 權限設定。
 - 真實 Google OAuth 同意／回呼／重新登入／session 到期與 project pause 操作。
 - 真實 Supabase/PostgREST API 上的另一帳號及匿名直接請求驗證。
