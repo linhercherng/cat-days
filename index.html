@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf7f0">
+  <meta name="description" content="貓咪手帳：用溫暖的方式，記下生活小事與每天的心情。手機版畫面樣稿。">
+  <title>貓咪手帳 · 本週記事</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./preview.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳至主要內容</a>
+  <div class="app">
+    <div class="prototype-strip">畫面樣稿 · 示範日期 2026/10/10 · 尚不儲存資料</div>
+    <header class="brand-header">
+      <a class="brand" href="#home" aria-label="貓咪手帳，回首頁"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#paw"/></svg>貓咪手帳</a>
+      <span class="header-caption">把日子，慢慢記下</span>
+    </header>
+    <main id="main-content" tabindex="-1">
+      <section id="home" data-view aria-labelledby="home-title">
+        <div class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">OCTOBER · 2026</p>
+            <h1 id="home-title" tabindex="-1">把小日子，<br>慢慢記下。</h1>
+            <p>今天是 10 月 10 日，星期六。</p>
+          </div>
+          <button class="cat-button" id="cat-button" aria-label="點貓咪，看看牠的小紙條" aria-expanded="false" aria-controls="cat-message">
+            <img src="./assets/cat.svg" alt="抱著綠色手帳的橘貓" width="220" height="196">
+            <span class="cat-hint">摸摸貓咪的小腦袋</span>
+          </button>
+        </div>
+        <p id="cat-message" class="cat-message" role="status" hidden>「記下一點點也很好。」</p>
+        <div class="section-label"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg><h2>這一週的小日子</h2></div>
+        <div class="week-switch">
+          <button class="icon-button" aria-label="上一週" data-preview="目前展示 10 月 5 日至 11 日的本週畫面。切換週次會在畫面確認後製作。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#left"/></svg></button>
+          <p class="week-label">10 月 5 日 — 11 日<span>星期一至星期日</span></p>
+          <button class="icon-button" aria-label="下一週" data-preview="目前展示 10 月 5 日至 11 日的本週畫面。切換週次會在畫面確認後製作。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#right"/></svg></button>
+        </div>
+        <div class="week-return"><button class="text-button" data-preview="目前已在示範的本週。正式版本會依台灣時間回到當週。">回到本週</button></div>
+        <div class="timeline">
+          <section class="day-group" aria-labelledby="oct-6">
+            <h2 id="oct-6" class="date-heading"><strong>06</strong>星期二 <span>10 月</span></h2>
+            <button class="note" data-preview="這是示範記事。目前的單日畫面樣稿為 10 月 10 日；其他日期內容會於下一階段製作。"><p>買咖啡豆，試試上次那家小店。</p><p class="note-secondary">生活裡的小小補給。</p></button>
+          </section>
+          <section class="day-group" aria-labelledby="oct-9">
+            <h2 id="oct-9" class="date-heading"><strong>09</strong>星期五 <span>10 月</span></h2>
+            <button class="note note-peach" data-preview="這是示範記事。目前的單日畫面樣稿為 10 月 10 日；其他日期內容會於下一階段製作。"><p><span class="mood-chip" aria-label="開心">🙂</span>和朋友吃飯，聊得很開心。</p><p class="note-secondary">好久沒見，還是有說不完的話。</p></button>
+          </section>
+          <section class="day-group today-group" aria-labelledby="oct-10">
+            <h2 id="oct-10" class="date-heading"><strong>10</strong>星期六 <span class="pill">今天</span></h2>
+            <a class="note" href="#day"><p>晚上買牛奶，順便繞去公園。</p></a>
+            <a class="note note-peach" href="#day"><p><span class="mood-chip" aria-label="平靜">😌</span>慢慢走，也是一種好好生活。</p><p class="note-secondary">今天走了平常沒走的小路。</p></a>
+            <a class="inline-add" href="#editor"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#plus"/></svg>記在今天</a>
+          </section>
+          <section class="day-group" aria-labelledby="oct-11">
+            <h2 id="oct-11" class="date-heading"><strong>11</strong>星期日 <span>10 月</span></h2>
+            <button class="note" data-preview="這是示範記事。目前的單日畫面樣稿為 10 月 10 日；其他日期內容會於下一階段製作。"><p>下午散步，帶一本書出門。</p></button>
+          </section>
+        </div>
+        <div class="page-bottom"><button class="text-button" data-preview="正式版本會提供 localStorage 保存說明、下載備份與還原備份。本階段沒有保存個人資料。">資料與備份</button></div>
+      </section>
+
+      <section id="calendar" data-view aria-labelledby="calendar-title" hidden>
+        <a class="back-link" href="#home"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#left"/></svg>本週記事</a>
+        <div class="page-title"><p class="eyebrow">A LITTLE SPACE FOR YOUR DAYS</p><h1 id="calendar-title" tabindex="-1">翻翻日子</h1><p>選一天，看看那天的小事。</p></div>
+        <div class="month-switch">
+          <button class="icon-button" aria-label="上一個月" data-preview="目前提供 2026 年 10 月的固定月曆樣稿。月份切換於下一階段製作。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#left"/></svg></button>
+          <button class="month-title" aria-label="選擇年份與月份，目前 2026 年 10 月" data-preview="正式版本可直接選擇 1900 至 2100 年的年份與月份。本階段展示 2026 年 10 月。"><small>2026</small>10 月<svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#down"/></svg></button>
+          <button class="icon-button" aria-label="下一個月" data-preview="目前提供 2026 年 10 月的固定月曆樣稿。月份切換於下一階段製作。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#right"/></svg></button>
+        </div>
+        <div class="month-top"><p class="muted">今天 · 10 月 10 日，星期六</p><button class="text-button" data-preview="目前已展示示範今天所在的月份。正式版本會依台灣時間定位今天。">回到今天</button></div>
+        <div class="calendar-sheet" aria-label="2026 年 10 月月曆，星期一為每週起點">
+          <div class="weekdays" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span class="weekend">六</span><span class="weekend">日</span></div>
+          <div class="calendar-grid">
+            <button class="calendar-cell outside" aria-label="9 月 28 日，星期一" data-preview="其他日期的單日資訊於畫面確認後製作。">28</button>
+            <button class="calendar-cell outside" aria-label="9 月 29 日，星期二" data-preview="其他日期的單日資訊於畫面確認後製作。">29</button>
+            <button class="calendar-cell outside" aria-label="9 月 30 日，星期三" data-preview="其他日期的單日資訊於畫面確認後製作。">30</button>
+            <button class="calendar-cell" aria-label="10 月 1 日，星期四" data-preview="其他日期的單日資訊於畫面確認後製作。">1</button>
+            <button class="calendar-cell" aria-label="10 月 2 日，星期五" data-preview="其他日期的單日資訊於畫面確認後製作。">2</button>
+            <button class="calendar-cell weekend" aria-label="10 月 3 日，星期六" data-preview="其他日期的單日資訊於畫面確認後製作。">3</button>
+            <button class="calendar-cell weekend" aria-label="10 月 4 日，星期日" data-preview="其他日期的單日資訊於畫面確認後製作。">4</button>
+            <button class="calendar-cell" aria-label="10 月 5 日，星期一" data-preview="其他日期的單日資訊於畫面確認後製作。">5</button>
+            <button class="calendar-cell" aria-label="10 月 6 日，星期二，有記事" data-preview="其他日期的單日資訊於畫面確認後製作。">6<span class="date-dot" aria-hidden="true"></span></button>
+            <button class="calendar-cell" aria-label="10 月 7 日，星期三" data-preview="其他日期的單日資訊於畫面確認後製作。">7</button>
+            <button class="calendar-cell" aria-label="10 月 8 日，星期四" data-preview="其他日期的單日資訊於畫面確認後製作。">8</button>
+            <button class="calendar-cell" aria-label="10 月 9 日，星期五，有記事" data-preview="其他日期的單日資訊於畫面確認後製作。">9<span class="date-dot" aria-hidden="true"></span></button>
+            <a class="calendar-cell today" href="#day" aria-label="10 月 10 日，星期六，今天，有 2 筆記事" aria-current="date">10<span class="date-dot" aria-hidden="true"></span></a>
+            <button class="calendar-cell weekend" aria-label="10 月 11 日，星期日，有記事" data-preview="其他日期的單日資訊於畫面確認後製作。">11<span class="date-dot" aria-hidden="true"></span></button>
+            <button class="calendar-cell" aria-label="10 月 12 日，星期一" data-preview="其他日期的單日資訊於畫面確認後製作。">12</button>
+            <button class="calendar-cell" aria-label="10 月 13 日，星期二" data-preview="其他日期的單日資訊於畫面確認後製作。">13</button>
+            <button class="calendar-cell" aria-label="10 月 14 日，星期三" data-preview="其他日期的單日資訊於畫面確認後製作。">14</button>
+            <button class="calendar-cell" aria-label="10 月 15 日，星期四" data-preview="其他日期的單日資訊於畫面確認後製作。">15</button>
+            <button class="calendar-cell" aria-label="10 月 16 日，星期五" data-preview="其他日期的單日資訊於畫面確認後製作。">16</button>
+            <button class="calendar-cell weekend" aria-label="10 月 17 日，星期六" data-preview="其他日期的單日資訊於畫面確認後製作。">17</button>
+            <button class="calendar-cell weekend" aria-label="10 月 18 日，星期日" data-preview="其他日期的單日資訊於畫面確認後製作。">18</button>
+            <button class="calendar-cell" aria-label="10 月 19 日，星期一" data-preview="其他日期的單日資訊於畫面確認後製作。">19</button>
+            <button class="calendar-cell" aria-label="10 月 20 日，星期二" data-preview="其他日期的單日資訊於畫面確認後製作。">20</button>
+            <button class="calendar-cell" aria-label="10 月 21 日，星期三" data-preview="其他日期的單日資訊於畫面確認後製作。">21</button>
+            <button class="calendar-cell" aria-label="10 月 22 日，星期四" data-preview="其他日期的單日資訊於畫面確認後製作。">22</button>
+            <button class="calendar-cell" aria-label="10 月 23 日，星期五" data-preview="其他日期的單日資訊於畫面確認後製作。">23</button>
+            <button class="calendar-cell weekend" aria-label="10 月 24 日，星期六" data-preview="其他日期的單日資訊於畫面確認後製作。">24</button>
+            <button class="calendar-cell weekend" aria-label="10 月 25 日，星期日" data-preview="其他日期的單日資訊於畫面確認後製作。">25</button>
+            <button class="calendar-cell" aria-label="10 月 26 日，星期一" data-preview="其他日期的單日資訊於畫面確認後製作。">26</button>
+            <button class="calendar-cell" aria-label="10 月 27 日，星期二" data-preview="其他日期的單日資訊於畫面確認後製作。">27</button>
+            <button class="calendar-cell" aria-label="10 月 28 日，星期三" data-preview="其他日期的單日資訊於畫面確認後製作。">28</button>
+            <button class="calendar-cell" aria-label="10 月 29 日，星期四" data-preview="其他日期的單日資訊於畫面確認後製作。">29</button>
+            <button class="calendar-cell" aria-label="10 月 30 日，星期五" data-preview="其他日期的單日資訊於畫面確認後製作。">30</button>
+            <button class="calendar-cell weekend" aria-label="10 月 31 日，星期六" data-preview="其他日期的單日資訊於畫面確認後製作。">31</button>
+            <button class="calendar-cell outside" aria-label="11 月 1 日，星期日" data-preview="其他日期的單日資訊於畫面確認後製作。">1</button>
+          </div>
+        </div>
+        <div class="legend"><span><i class="legend-today" aria-hidden="true"></i>今天</span><span><i class="legend-dot" aria-hidden="true"></i>有記事</span></div>
+        <div class="selected-day"><div class="selected-day-heading"><strong>10 月 10 日 · 星期六</strong><span class="pill">今天</span></div><p>國慶日 · 2 筆小事留在這一天</p><a href="#day">看看這一天<svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#right"/></svg></a></div>
+        <button class="tool-row" data-preview="算天數會於畫面確認後製作：選擇開始與結束日期，同時顯示相隔天數與頭尾都算的結果。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#clock"/></svg>兩個日期，相隔幾天？<svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#right"/></svg></button>
+      </section>
+
+      <section id="day" data-view aria-labelledby="day-title" hidden>
+        <a class="back-link" id="day-back" href="#calendar"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#left"/></svg><span>回月曆</span></a>
+        <div class="day-date"><span class="large-date" aria-hidden="true">10</span><div><p class="eyebrow">OCTOBER · 2026</p><h1 id="day-title" tabindex="-1">10 月 10 日</h1><p>星期六 <span class="pill">今天</span></p></div></div>
+        <div class="holiday"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#spark"/></svg><div><strong>國慶日</strong><p>節日資訊示例 · 完整年度資料於後續接入</p></div></div>
+        <div class="day-switch"><button data-preview="前後日期切換會於畫面確認後製作。目前展示 10 月 10 日的單日樣稿。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#left"/></svg>前一天</button><button data-preview="前後日期切換會於畫面確認後製作。目前展示 10 月 10 日的單日樣稿。">後一天<svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#right"/></svg></button></div>
+        <div class="day-notes-heading"><h2>這一天的記事</h2><span>2 筆小事</span></div>
+        <a class="note day-note" href="#editor" aria-label="編輯記事畫面預覽：晚上買牛奶，順便繞去公園"><div class="note-meta"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg>生活記事</div><p>晚上買牛奶，順便繞去公園。</p><p class="note-secondary">如果還有精神，就多走一小圈。</p><div class="note-foot"><span>點一下，查看編輯畫面</span><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg></div></a>
+        <a class="note day-note note-peach" href="#editor" aria-label="編輯心情畫面預覽：慢慢走，也是一種好好生活"><div class="note-meta"><span class="mood-chip" aria-hidden="true">😌</span>平靜 · 心情記錄</div><p>慢慢走，也是一種好好生活。</p><p class="note-secondary">今天走了平常沒走的小路。路邊的樹影很好看，也終於有時間把一首歌聽完。</p><div class="note-foot"><span>點一下，查看編輯畫面</span><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg></div></a>
+        <a class="day-add" href="#editor"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#plus"/></svg>記在這一天</a>
+      </section>
+
+      <section id="editor" data-view aria-labelledby="editor-title" hidden>
+        <a class="back-link" id="editor-back" href="#day"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#left"/></svg><span>返回</span></a>
+        <div class="page-title editor-title"><div><p class="eyebrow">A NOTE TO YOURSELF</p><h1 id="editor-title" tabindex="-1">記一筆</h1><p>小事、心情，想到什麼就寫什麼。</p></div><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg></div>
+        <form id="note-form">
+          <div class="field"><label for="note-date">記在哪一天？</label><input id="note-date" name="date" type="date" value="2026-10-10" min="1900-01-01" max="2100-12-31"><span class="field-help">預設今天，也可以換成其他日期。</span></div>
+          <div class="field"><label for="note-text">想記下什麼？</label><textarea id="note-text" name="text" rows="4" placeholder="例如：晚上買牛奶，或今天遇到一件開心的小事。"></textarea><span class="field-help">不用想標題。只記心情也可以。</span></div>
+          <fieldset class="mood-field"><legend>今天的心情<span class="optional">選填</span></legend><div class="mood-options">
+            <button class="mood-option" type="button" aria-pressed="false" aria-label="心情：開心"><span aria-hidden="true">🙂</span><span>開心</span></button>
+            <button class="mood-option" type="button" aria-pressed="false" aria-label="心情：平靜"><span aria-hidden="true">😌</span><span>平靜</span></button>
+            <button class="mood-option" type="button" aria-pressed="false" aria-label="心情：普通"><span aria-hidden="true">😐</span><span>普通</span></button>
+            <button class="mood-option" type="button" aria-pressed="false" aria-label="心情：低落"><span aria-hidden="true">😔</span><span>低落</span></button>
+            <button class="mood-option" type="button" aria-pressed="false" aria-label="心情：疲累"><span aria-hidden="true">😣</span><span>疲累</span></button>
+          </div><div class="mood-footer"><p id="mood-status" aria-live="polite">不選也沒關係。</p><button class="text-button" id="clear-mood" type="button">清除選擇</button></div></fieldset>
+          <div class="field"><label for="mood-text">想多說一點嗎？<span class="optional">選填</span></label><textarea id="mood-text" name="moodText" rows="3" placeholder="今天有點累，但散步後好多了。"></textarea></div>
+          <div class="storage-note"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#paw"/></svg><p>這是畫面樣稿，輸入尚不會儲存。正式版本會保存在這個瀏覽器，不會自動同步到其他裝置。</p></div>
+        </form>
+      </section>
+    </main>
+    <footer class="dock" id="main-dock"><nav class="dock-nav" aria-label="主要功能"><a class="primary" href="#editor"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#plus"/></svg>記一筆</a><a href="#calendar"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#calendar"/></svg>看月曆</a><button data-preview="找日期會在畫面確認後製作：輸入或選擇日期，再直接開啟那一天。"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#search"/></svg>找日期</button></nav><p class="dock-caption">小小的記錄，也是生活的痕跡。</p></footer>
+    <footer class="dock editor-dock" id="editor-dock" hidden><button class="primary" type="submit" form="note-form"><svg class="icon" aria-hidden="true"><use href="./assets/icons.svg#pen"/></svg>儲存記事</button><p class="dock-caption">畫面預覽 · 內容尚不會儲存</p></footer>
+  </div>
+  <dialog id="preview-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-message"><h2 id="dialog-title">畫面預覽說明</h2><p id="dialog-message"></p><button class="primary" id="dialog-close" type="button">知道了</button></dialog>
+  <noscript><p>請啟用 JavaScript 以切換四個畫面樣稿。目前首頁仍可閱讀。</p></noscript>
+</body>
+</html>

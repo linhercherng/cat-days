@@ -1,0 +1,191 @@
+:root {
+  color-scheme: light;
+  --paper: #faf7f0;
+  --surface: #fffdf8;
+  --ink: #493e34;
+  --muted: #74695d;
+  --green: #52674e;
+  --green-soft: #e8eddf;
+  --line: #e5dfd3;
+  --peach: #f4e3d5;
+  --accent: #986342;
+  --radius: 14px;
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: #ece8de;
+  scrollbar-width: thin;
+  scrollbar-color: #c6beb0 #faf7f0;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, textarea { font: inherit; }
+button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-decoration: none; }
+button { color: inherit; cursor: pointer; }
+button, .button { min-height: 48px; }
+button { border: 0; background: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+button:disabled { cursor: default; }
+[hidden] { display: none !important; }
+.icon { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: currentColor; }
+.skip-link { position: fixed; top: -80px; left: 16px; padding: 12px; background: var(--surface); z-index: 9; }
+.skip-link:focus { top: 12px; }
+.app { max-width: 640px; margin: 0 auto; min-height: 100dvh; background: var(--paper); }
+.prototype-strip { padding: 8px 16px; text-align: center; background: #e8e4da; color: #62584c; font-size: 12px; letter-spacing: .04em; }
+.brand-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 12px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 650; letter-spacing: .08em; }
+.brand .icon { color: var(--accent); }
+.header-caption { color: var(--muted); font-size: 12px; letter-spacing: .12em; }
+main { padding: 0 24px 144px; }
+h1, h2, p { margin: 0; }
+h1, .serif { font-family: 'Noto Serif TC', 'Songti TC', 'PMingLiU', serif; font-weight: 600; }
+h1 { font-size: 30px; line-height: 1.4; letter-spacing: .06em; }
+h1[tabindex='-1']:focus { outline: none; }
+h2 { font-size: 18px; font-weight: 650; }
+.eyebrow { font-size: 11px; letter-spacing: .18em; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.hero { position: relative; display: flex; align-items: center; min-height: 184px; padding: 12px 0 20px; }
+.hero-copy { flex: 1; position: relative; z-index: 1; }
+.hero h1 { margin-top: 10px; }
+.hero-copy > p:last-child { margin-top: 12px; font-size: 14px; color: var(--muted); }
+.cat-button { width: 144px; flex-shrink: 0; margin-right: -10px; padding: 0; transition: transform .18s ease; }
+.cat-button:hover { transform: rotate(-2deg); }
+.cat-button img { width: 100%; display: block; }
+.cat-hint { display: block; font-size: 11px; color: var(--muted); text-align: center; margin-top: -8px; }
+.cat-message { padding: 10px 14px; margin: -8px 0 20px; color: var(--green); background: var(--green-soft); border-radius: 8px; font-size: 14px; }
+.section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.section-label .icon { width: 18px; height: 18px; color: var(--green); }
+.week-switch, .month-switch { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.week-switch { padding: 4px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.icon-button { width: 48px; min-width: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; }
+.icon-button:hover, .text-button:hover { background: var(--green-soft); }
+.week-label { text-align: center; font-size: 16px; font-weight: 600; letter-spacing: .02em; }
+.week-label span { display: block; font-size: 11px; color: var(--muted); font-weight: 400; letter-spacing: .12em; }
+.week-return { display: flex; justify-content: flex-end; margin: 4px 0 8px; }
+.text-button { padding: 8px 12px; border-radius: 8px; color: var(--green); font-size: 14px; }
+.timeline { position: relative; }
+.timeline::before { content: ''; position: absolute; left: 18px; top: 20px; bottom: 30px; width: 1px; background: var(--line); }
+.day-group { position: relative; padding: 4px 0 16px 48px; }
+.date-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+.date-heading strong { position: absolute; left: 0; width: 36px; height: 36px; background: var(--paper); display: grid; place-items: center; font-size: 20px; color: var(--ink); font-family: Georgia, serif; font-weight: 400; }
+.today-group .date-heading strong { background: var(--green); color: var(--surface); border-radius: 50%; font-size: 18px; }
+.pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 5px; padding: 2px 8px; font-size: 11px; background: var(--green-soft); color: var(--green); }
+.note { display: block; width: 100%; padding: 14px 16px; margin: 8px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-align: left; }
+.note:hover { border-color: #b5c0a9; }
+.note p { font-size: 16px; line-height: 1.7; }
+.note-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 11px; color: var(--muted); }
+.note-meta .icon { width: 14px; height: 14px; }
+.note .note-secondary { margin-top: 6px; color: var(--muted); font-size: 13px; }
+.mood-chip { font-size: 18px; margin-right: 4px; }
+.note-peach { background: #fffaf5; border-color: #e8d9cc; }
+.inline-add { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--green); min-height: 44px; }
+.inline-add .icon { width: 16px; height: 16px; }
+.page-bottom { display: flex; justify-content: center; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 12px; }
+.page-bottom .text-button { color: var(--muted); font-size: 12px; }
+.dock { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 640px; padding: 12px 24px max(16px, env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); z-index: 3; }
+.dock-nav { display: flex; align-items: center; gap: 8px; }
+.dock-nav > * { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 14px; min-height: 52px; border-radius: 10px; white-space: nowrap; }
+.dock-nav .primary { flex: 1.2; }
+.primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: var(--green); color: var(--surface); border-radius: 10px; font-weight: 550; }
+.primary:hover { background: #435940; }
+.dock-caption { margin-top: 8px; color: var(--muted); font-size: 11px; text-align: center; letter-spacing: .06em; }
+.back-link { display: inline-flex; align-items: center; gap: 4px; min-height: 48px; font-size: 14px; color: var(--muted); margin-left: -8px; }
+.back-link .icon { width: 18px; height: 18px; }
+.page-title { padding: 12px 0 24px; }
+.page-title p { margin-top: 8px; color: var(--muted); font-size: 14px; }
+.month-title { font-family: Georgia, 'PMingLiU', serif; font-size: 27px; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: .05em; }
+.month-title small { font-family: inherit; font-size: 14px; }
+.month-title .icon { width: 17px; height: 17px; }
+.month-top { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 16px; }
+.month-top p { font-size: 12px; }
+.calendar-sheet { padding: 8px 8px 16px; margin: 0 -8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.weekdays { padding: 10px 0; border-bottom: 1px solid var(--line); margin-bottom: 8px; font-size: 12px; text-align: center; color: var(--muted); }
+.weekend { color: var(--accent); }
+.calendar-cell { min-width: 0; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 17px; border-radius: 8px; position: relative; }
+.calendar-cell:hover { background: var(--green-soft); }
+.calendar-cell.outside { color: var(--muted); }
+.calendar-cell.today { border: 2px solid var(--green); color: var(--green); background: #f2f5ec; font-weight: 700; }
+.calendar-cell .date-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); position: absolute; bottom: 5px; }
+.legend { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 16px 0 24px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend-today { width: 13px; height: 13px; border: 1.5px solid var(--green); border-radius: 4px; }
+.legend-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; }
+.selected-day { padding: 18px 20px; background: var(--green-soft); border-radius: 12px; }
+.selected-day-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.selected-day strong { font-size: 16px; }
+.selected-day p { margin: 8px 0 12px; font-size: 14px; color: var(--green); }
+.selected-day a { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--green); font-weight: 600; min-height: 44px; }
+.selected-day a .icon { width: 17px; }
+.tool-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 4px; margin-top: 16px; font-size: 14px; text-align: left; color: var(--muted); }
+.tool-row .icon:first-child { color: var(--green); }
+.tool-row .icon:last-child { margin-left: auto; }
+.day-date { display: flex; align-items: center; gap: 18px; padding: 8px 0 20px; }
+.large-date { font-family: Georgia, serif; font-size: 76px; line-height: 1; font-weight: 400; color: var(--green); }
+.day-date h1 { font-size: 23px; }
+.day-date p { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 14px; }
+.holiday { display: flex; align-items: center; gap: 12px; background: var(--peach); padding: 14px 16px; border-radius: 10px; margin-bottom: 16px; }
+.holiday .icon { color: var(--accent); }
+.holiday strong { display: block; font-size: 14px; font-weight: 600; }
+.holiday p { font-size: 12px; color: #795b46; }
+.day-switch { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.day-switch button { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+.day-notes-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.day-notes-heading span { color: var(--muted); font-size: 12px; }
+.day-note { padding: 18px 20px; margin-bottom: 14px; }
+.day-note > p { font-size: 16px; }
+.day-note .note-meta { margin-bottom: 10px; }
+.note-foot { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.note-foot .icon { width: 16px; height: 16px; }
+.day-add { width: 100%; display: flex; justify-content: center; gap: 8px; align-items: center; border: 1px dashed #a9b39d; color: var(--green); border-radius: 10px; min-height: 52px; margin-top: 20px; font-size: 14px; }
+.editor-title { display: flex; align-items: flex-start; justify-content: space-between; }
+.editor-title .icon { width: 28px; height: 28px; margin: 8px; color: #ad967a; }
+.field { margin-bottom: 24px; }
+.field label, .mood-field legend { display: block; font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+.optional { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+input, textarea { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); padding: 14px 16px; font-size: 16px; }
+input[type='date'] { min-height: 52px; }
+textarea { display: block; resize: vertical; line-height: 1.8; }
+textarea::placeholder { color: var(--muted); }
+.field-help { display: block; margin-top: 8px; font-size: 12px; color: var(--muted); }
+.mood-field { padding: 0; margin: 0 0 24px; border: 0; min-width: 0; }
+.mood-options { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.mood-option { display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); min-height: 72px; padding: 8px 0; gap: 2px; }
+.mood-option span:first-child { font-size: 25px; }
+.mood-option span:last-child { font-size: 11px; color: var(--muted); }
+.mood-option[aria-pressed='true'] { border: 2px solid var(--green); background: var(--green-soft); }
+.mood-footer { display: flex; justify-content: space-between; align-items: center; }
+.mood-footer p { font-size: 12px; color: var(--muted); }
+.storage-note { display: flex; align-items: flex-start; gap: 10px; padding: 14px 16px; border-radius: 10px; background: var(--green-soft); font-size: 12px; color: var(--green); }
+.storage-note .icon { width: 18px; height: 18px; margin-top: 2px; }
+.editor-dock .primary { width: 100%; font-size: 16px; }
+dialog { max-width: min(400px, calc(100vw - 40px)); padding: 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); color: var(--ink); }
+dialog::backdrop { background: rgb(49 42 33 / .28); }
+dialog h2 { font-size: 20px; font-family: 'PMingLiU', serif; margin-bottom: 12px; }
+dialog p { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
+dialog button { width: 100%; }
+@media (min-width: 700px) {
+  .app { margin: 32px auto; min-height: calc(100dvh - 64px); border: 1px solid #ddd5c8; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 40px rgb(80 61 39 / .05); }
+  main { padding-left: 40px; padding-right: 40px; }
+  .brand-header { padding-left: 40px; padding-right: 40px; }
+  .dock { border: 1px solid var(--line); border-bottom: 0; border-radius: 16px 16px 0 0; }
+  .hero { min-height: 200px; }
+  .cat-button { width: 180px; }
+  h1 { font-size: 34px; }
+}
+@media (max-width: 359px) {
+  main { padding-left: 16px; padding-right: 16px; }
+  .brand-header, .dock { padding-left: 16px; padding-right: 16px; }
+  h1 { font-size: 27px; }
+  .cat-button { width: 112px; }
+  .calendar-sheet { margin: 0 -16px; padding-left: 0; padding-right: 0; border-left: 0; border-right: 0; border-radius: 0; }
+  .dock-nav > * { font-size: 13px; gap: 4px; }
+  .dock-nav .icon { width: 18px; height: 18px; }
+  .mood-options { gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
