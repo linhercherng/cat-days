@@ -28,7 +28,8 @@
 ## 仍待驗收
 
 - 2026-10-11 真實 API 連線：`/auth/v1/settings` 回覆 HTTP 200，但 `external.google=false`；`cat_days_allowed`／`cat_days_changes` 回覆 HTTP 404、PGRST202，`cat_days_notes` 回覆 HTTP 404、PGRST205。這是同步物件尚未出現在 API 的證據，不能當作匿名權限測試通過。未傳送或寫入任何記事。
-- 指定專案控制台在目前驗收瀏覽器尚未登入，需由使用者完成登入，才能協助檢查 migration 與允許名單。Google client secret 只由使用者填入 Provider 頁面。
+- 使用者登入 Chrome 控制台後，唯讀 SQL 確認 `cat_days_private` schema、`public.cat_days_notes` 表與 `public.cat_days_allowed()` 函式均為 NULL。Google Provider 關閉且 Client ID／Secret 尚未填入；Site URL 仍為預設 localhost，無 Redirect URL。
+- migration 已放入 SQL Editor、正式網站 URL 已填入待保存表單，兩者尚未執行。建立網站存取權限的瀏覽器操作等待當下確認；唯一 Google email 尚待使用者提供。Google client secret 只由使用者填入 Provider 頁面。
 - 真實 Supabase project 的 migration、指定帳號允許名單及完整 API 權限設定。
 - 真實 Google OAuth 同意／回呼／重新登入／session 到期與 project pause 操作。
 - 真實 Supabase/PostgREST API 上的另一帳號及匿名直接請求驗證。
