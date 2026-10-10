@@ -189,3 +189,30 @@ dialog button { width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+.editor-fields { padding: 0; margin: 0; border: 0; min-width: 0; }
+.error-banner, .app-status { margin: 12px 24px; padding: 12px 16px; border-radius: 10px; font-size: 14px; overflow-wrap: anywhere; }
+.error-banner { background: #f6e5df; color: #843f2e; }
+.app-status, .draft-banner { background: var(--green-soft); color: var(--green); }
+.draft-banner { padding: 16px; border-radius: 10px; margin-bottom: 20px; }
+.draft-banner p { margin: 8px 0; font-size: 14px; }
+.empty-message { color: var(--muted); padding: 12px 0; font-size: 15px; }
+.day-overview { display: inline-block; min-height: 44px; color: var(--green); font-size: 13px; padding: 8px 0; }
+.note p, .draft-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.note > .pill { margin-bottom: 8px; }
+.editor-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
+.danger-button { color: #843f2e; border-radius: 10px; padding: 12px 16px; }
+.danger-button:hover { background: #f6e5df; }
+.data-card { border: 1px solid var(--line); background: var(--surface); padding: 20px; margin-bottom: 20px; border-radius: var(--radius); overflow-wrap: anywhere; }
+.data-card h2 { margin-bottom: 12px; }
+.data-card p { margin: 10px 0; font-size: 15px; }
+.data-card .primary { width: 100%; margin: 8px 0; min-height: 48px; }
+.file-label { display: block; margin: 16px 0 8px; font-size: 15px; }
+input[type='file'] { padding: 12px 8px; font-size: 14px; }
+.backup-counts { width: 100%; margin: 16px 0; font-size: 14px; border-collapse: collapse; }
+.backup-counts th, .backup-counts td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--line); }
+.draft-item { padding: 12px 0; border-top: 1px solid var(--line); }
+.draft-item a { display: inline-flex; align-items: center; color: var(--green); min-height: 48px; }
+button:disabled { opacity: .55; }
+#dialog-actions { display: grid; gap: 8px; }
+dialog p { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 45dvh; overflow-y: auto; }
+dialog { max-height: 85dvh; overflow-y: auto; }
