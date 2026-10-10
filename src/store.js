@@ -6,6 +6,10 @@ export function createStore(storage, options = {}) {
   const now = options.now || (() => new Date().toISOString());
   const id = options.id || (() => crypto.randomUUID());
   const lock = options.lock || (async task => task());
+  const after = previous => {
+    const at = now();
+    return previous && at <= previous ? new Date(Date.parse(previous) + 1).toISOString() : at;
+  };
   function read() {
     let raw;
     try { raw = storage.getItem(KEY); } catch { throw new Error('無法讀取瀏覽器儲存空間；請檢查瀏覽器設定。輸入仍可複製。'); }
@@ -38,7 +42,7 @@ export function createStore(storage, options = {}) {
         if (expected) {
           const index = s.notes.findIndex(n => n.id === expected.id);
           if (!same(s.notes[index], expected)) conflict();
-          saved = note({ ...expected, ...content, updatedAt: now() });
+          saved = note({ ...expected, ...content, updatedAt: after(expected.updatedAt) });
           s.notes[index] = saved;
         } else {
           const at = now();
@@ -60,7 +64,7 @@ export function createStore(storage, options = {}) {
     saveDraft(input, expected = null) {
       return transaction(s => {
         if (!same(s.drafts.find(d => d.id === input.id), expected)) conflict();
-        const saved = draft({ ...input, updatedAt: now() });
+        const saved = draft({ ...input, updatedAt: after(expected?.updatedAt) });
         s.drafts = s.drafts.filter(d => d.id !== saved.id);
         s.drafts.push(saved);
         return saved;

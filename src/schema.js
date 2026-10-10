@@ -4,7 +4,7 @@ export const LIMIT = 5000;
 export const MAX_TEXT = 20000;
 function check(ok, message = '資料格式不正確。') { if (!ok) throw new Error(message); }
 function record(value) { check(value && typeof value === 'object' && !Array.isArray(value)); }
-function id(value) { check(typeof value === 'string' && value.length > 0 && value.length <= 256); return value; }
+function id(value, max = 256) { check(typeof value === 'string' && value.length > 0 && value.length <= max); return value; }
 function text(value) { check(typeof value === 'string' && value.length <= MAX_TEXT, '文字不得超過 20,000 字。'); return value; }
 function timestamp(value) { check(typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString() === value); return value; }
 export function fields(value, draft = false) {
@@ -16,15 +16,15 @@ export function fields(value, draft = false) {
   return result;
 }
 export function note(value) {
-  const result = { id: id(value.id), ...fields(value), createdAt: timestamp(value.createdAt), updatedAt: timestamp(value.updatedAt) };
+  const result = { id: id(value.id, 128), ...fields(value), createdAt: timestamp(value.createdAt), updatedAt: timestamp(value.updatedAt) };
   check(result.updatedAt >= result.createdAt);
-  if (value.originId !== undefined) result.originId = id(value.originId);
+  if (value.originId !== undefined) result.originId = id(value.originId, 128);
   return result;
 }
 export function draft(value) {
   record(value);
   check(['new', 'edit', 'recovery'].includes(value.slot));
-  const result = { id: id(value.id), slot: value.slot, noteId: value.noteId === null ? null : id(value.noteId), ...fields(value, true), updatedAt: timestamp(value.updatedAt) };
+  const result = { id: id(value.id), slot: value.slot, noteId: value.noteId === null ? null : id(value.noteId, 128), ...fields(value, true), updatedAt: timestamp(value.updatedAt) };
   check(value.slot !== 'new' || (value.id === 'new' && value.noteId === null));
   check(value.slot !== 'edit' || value.id === `edit:${value.noteId}`);
   if (value.originId !== undefined) result.originId = id(value.originId);

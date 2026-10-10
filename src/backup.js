@@ -19,7 +19,7 @@ export function mergeBackup(current, incoming, newId = () => crypto.randomUUID()
     const related = merged.notes.filter(n => root(n) === root(item));
     const match = related.find(n => sameFields(n, item));
     if (match) { counts.notes.skipped++; map.set(item.id, match.id); continue; }
-    const collision = merged.notes.some(n => n.id === item.id) || related.length > 0;
+    const collision = merged.notes.some(n => n.id === item.id);
     const added = collision ? { ...item, id: newId(), originId: root(item) } : { ...item };
     merged.notes.push(added); map.set(item.id, added.id);
     counts.notes.added++; if (collision) counts.notes.conflicts++;

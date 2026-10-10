@@ -99,3 +99,36 @@ test('restore checks stale preview and failed writes leave notes and drafts unch
   await assert.rejects(f.store.restore(fresh));
   assert.equal(f.raw(), before);
 });
+test('an imported future timestamp can still be edited after a device clock rollback', async () => {
+  const f = fixture();
+  const future = { ...makeBackup(f.store.read()), notes: [{ ...input, id: 'future', createdAt: '2027-01-01T00:00:00.000Z', updatedAt: '2027-01-02T00:00:00.000Z' }] };
+  await f.store.restore(mergeBackup(f.store.read(), future));
+  const saved = await f.store.saveNote({ ...input, text: '可編輯' }, f.store.read().notes[0]);
+  assert.ok(saved.updatedAt > future.notes[0].updatedAt);
+});
+test('empty date drafts preserve incomplete input; failed autosave and discard keep previous draft', async () => {
+  const f = fixture();
+  const d = await f.store.saveDraft({ ...input, date: '', text: '還沒選日期', id: 'new', slot: 'new', noteId: null });
+  assert.equal(f.store.read().drafts[0].date, '');
+  const before = f.raw(); f.fail();
+  await assert.rejects(f.store.saveDraft({ ...d, text: '新輸入' }, d));
+  await assert.rejects(f.store.discardDraft(d));
+  assert.equal(f.raw(), before);
+});
+test('restore retains an active draft while importing different content as a recoverable copy', async () => {
+  const f = fixture(), donor = fixture();
+  await f.store.saveDraft({ ...input, id: 'new', slot: 'new', noteId: null });
+  await donor.store.saveDraft({ ...input, text: '匯入', id: 'new', slot: 'new', noteId: null });
+  await f.store.restore(mergeBackup(f.store.read(), makeBackup(donor.store.read())));
+  assert.equal(f.store.read().drafts.find(d => d.id === 'new').text, '牛奶');
+  assert.equal(f.store.read().drafts.filter(d => d.slot === 'recovery').length, 1);
+});
+test('a backup with existing imported copies preserves note IDs on a clean-device round trip', async () => {
+  const a = fixture(), b = fixture();
+  const original = await a.store.saveNote(input);
+  const source = makeBackup(a.store.read());
+  source.notes.push({ ...original, id: 'already-a-copy', text: '不同內容', originId: original.id });
+  const merge = mergeBackup(b.store.read(), source);
+  assert.equal(merge.counts.notes.conflicts, 0);
+  assert.deepEqual(merge.state.notes, source.notes);
+});
