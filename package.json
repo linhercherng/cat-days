@@ -1,10 +1,17 @@
 {
   "name": "cat-days",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "check": "node --check app.js"
+    "check": "node --check app.js",
+    "build:vendor": "node scripts/build-vendor.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.108.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
   }
 }
