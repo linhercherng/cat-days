@@ -4,7 +4,7 @@
 
 ## 已完成
 
-- 2026-10-11 使用者確認記憶體登入取捨，並提供公開 project URL／publishable key，已填入分支設定。使用者回報只允許專案建立本人；資料庫允許名單仍待實際驗證。
+- 2026-10-11 使用者確認記憶體登入取捨，並提供公開 project URL／publishable key，已填入分支設定。使用者確認執行資料庫存取權限與返回網址設定，唯一 Google 帳號已寫入私有允許名單，未加入公開 repository。
 - Google PKCE 回呼、公開設定檢查、登入憑證記憶體保存與十分钟 PKCE verifier 到期清理。依 SDK 2.108.1 實際介面製作，SDK 封裝在 repo，不從 CDN 載入。
 - 私人單帳號允許名單、Google verified email 檢查、RLS、禁用直接資料表寫入；所有寫入走權限／版本檢查 RPC。
 - 單帳號交易鎖與遞增游標、200 筆分頁、伺服器版本 CAS、操作冪等及遺失回覆重試。
@@ -24,17 +24,19 @@
 | 原本機模式 | 未配置畫面、本機新增、重新整理可讀取通過 |
 | 響應布局 | 同步畫面 320／375／390／430／768／1024／1440 px 無橫向溢出，320 px 按鈕高度至少 48 px |
 | 依賴 | SDK 2.108.1、esbuild 0.28.2 鎖定版本；npm audit 無已知漏洞；授權一併保存 |
+| 真實 Supabase 資料庫 | SQL Editor 安裝成功；四張表均啟用 RLS，私有表沒有前端政策，記事表具一項所有者讀取政策。唯一允許帳號列數為 1；私有 schema 禁止匿名使用，記事禁止匿名讀取及 authenticated 直接寫入 |
+| 真實匿名 API | `cat_days_allowed`、`cat_days_changes`、`cat_days_write` 及記事表 SELECT 均回覆 HTTP 401、SQLSTATE 42501。寫入請求在執行函式前即被拒絕，沒有建立測試記事 |
+| 真實資料庫角色模擬 | 在可回復交易中切換 authenticated／非允許使用者 ID，`cat_days_allowed=false`，記事 SELECT 可見筆數為 0；交易已 rollback。這不是另一個 Google 帳號的完整登入測試 |
+| 真實登入返回設定 | Site URL 與唯一 Redirect URL 均為 `https://linhercherng.github.io/cat-days/`，重新載入後仍正確，沒有萬用字元 |
+| 私有表 RLS 回歸 | migration 明確啟用私有三表 RLS，與控制台安裝結果一致；隔離 PostgreSQL 權限／CRUD／同步與八連線併發測試再跑通過 |
 
 ## 仍待驗收
 
-- 2026-10-11 真實 API 連線：`/auth/v1/settings` 回覆 HTTP 200，但 `external.google=false`；`cat_days_allowed`／`cat_days_changes` 回覆 HTTP 404、PGRST202，`cat_days_notes` 回覆 HTTP 404、PGRST205。這是同步物件尚未出現在 API 的證據，不能當作匿名權限測試通過。未傳送或寫入任何記事。
-- 使用者登入 Chrome 控制台後，唯讀 SQL 確認 `cat_days_private` schema、`public.cat_days_notes` 表與 `public.cat_days_allowed()` 函式均為 NULL。Google Provider 關閉且 Client ID／Secret 尚未填入；Site URL 仍為預設 localhost，無 Redirect URL。
-- migration 已放入 SQL Editor、正式網站 URL 已填入待保存表單，兩者尚未執行。建立網站存取權限的瀏覽器操作等待當下確認；唯一 Google email 尚待使用者提供。Google client secret 只由使用者填入 Provider 頁面。
-- 真實 Supabase project 的 migration、指定帳號允許名單及完整 API 權限設定。
+- `/auth/v1/settings` 最新回覆 HTTP 200、`external.google=false`。Google Provider 仍待使用者填入 Client ID／Secret、啟用並保存；秘密只由使用者填入 Provider 頁面。
 - 真實 Google OAuth 同意／回呼／重新登入／session 到期與 project pause 操作。
-- 真實 Supabase/PostgREST API 上的另一帳號及匿名直接請求驗證。
+- 真實 Supabase/PostgREST API 上指定帳號及另一 Google 帳號的登入／權限驗證。
 - 使用者兩台電腦同帳號驗收、iOS Safari／Android Chrome 實機。
 
-隔離 SQL 與模擬 Google 身分測試不能替代以上關卡。配置未提供前，不標示跨裝置同步正式完成。
+隔離 SQL、資料庫角色模擬與模擬 Google 身分測試不能替代以上關卡。尚未完成真實 OAuth 與兩台電腦驗收，不標示跨裝置同步正式完成。
 
 重現：`npm test`、`npm run check`、`npm run build:vendor`、`python scripts/test-database.py`。最後一項只建立隨機命名的測試容器並自動清理，不能用作真實專案安裝。

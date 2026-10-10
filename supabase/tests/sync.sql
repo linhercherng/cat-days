@@ -1,4 +1,11 @@
 \set ON_ERROR_STOP on
+do $$begin
+ if (select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace
+     where n.nspname='cat_days_private' and c.relname in ('allowed_account','counters','operations')
+       and c.relrowsecurity) <> 3 then
+   raise exception 'private tables must all enable RLS';
+ end if;
+end $$;
 insert into cat_days_private.allowed_account(email) values ('owner@example.test');
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000001';

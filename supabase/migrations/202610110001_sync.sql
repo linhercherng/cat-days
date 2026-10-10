@@ -11,6 +11,10 @@ create table cat_days_private.operations (
   owner_id uuid not null, operation_id uuid not null, request_hash bytea not null,
   result_id text not null, primary key(owner_id, operation_id)
 );
+-- Defense in depth: only owner-run security-definer functions use private tables.
+alter table cat_days_private.allowed_account enable row level security;
+alter table cat_days_private.counters enable row level security;
+alter table cat_days_private.operations enable row level security;
 create function public.cat_days_allowed() returns boolean
 language sql stable security definer set search_path = '' as $$
   select exists (
