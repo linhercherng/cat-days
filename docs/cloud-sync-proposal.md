@@ -1,5 +1,7 @@
 # 同帳號跨電腦同步提案
 
+已由 [2026-10-11 同步定稿](cloud-sync-specification.md) 取代，下方保留早期討論紀錄。
+
 狀態：2026-10-10 說明提案，尚未加入網站。現有 localStorage 不會因為登入同一個 Chrome、Google 或 GitHub 帳號而同步。立即換電腦可匯出 JSON、搬移備份，再在另一台電腦手動還原；之後的修改仍需再次搬移。
 
 建議下一階段使用 Supabase Auth + 私人 Postgres 資料表，登入可選 Google 帳號或電子郵件驗證碼。理由：GitHub Pages 提供靜態網站，無法自行提供私人帳號記事資料庫；Supabase 提供登入、資料庫及逐筆權限（RLS），可由現有前端連接，不必為個人網站另架伺服器。
