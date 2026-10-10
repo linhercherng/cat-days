@@ -10,25 +10,30 @@ export function makeBackup(current) {
   const data = state(current);
   return backup({ app: 'cat-days', version: 1, exportedAt: new Date().toISOString(), notes: data.notes, drafts: data.drafts });
 }
-const root = item => item.originId || item.id;
 export function mergeBackup(current, incoming, newId = () => crypto.randomUUID()) {
   const merged = state(current), source = backup(incoming);
   const counts = { notes: { added: 0, skipped: 0, conflicts: 0 }, drafts: { added: 0, skipped: 0, conflicts: 0 } };
   const map = new Map();
+  const noteIds = new Set(source.notes.map(n => n.id));
+  const draftIds = new Set(source.drafts.map(d => d.id));
+  // Explicitly distinct records inside the incoming file must stay distinct,
+  // even if an imported copy later acquired the same text as its original.
+  const relatedTo = (items, item, incomingIds) => items.filter(n => n.id === item.id || (n.originId === item.id && !incomingIds.has(n.id)));
   for (const item of source.notes) {
-    const related = merged.notes.filter(n => root(n) === root(item));
+    const related = relatedTo(merged.notes, item, noteIds);
     const match = related.find(n => sameFields(n, item));
     if (match) { counts.notes.skipped++; map.set(item.id, match.id); continue; }
     const collision = merged.notes.some(n => n.id === item.id);
-    const added = collision ? { ...item, id: newId(), originId: root(item) } : { ...item };
+    const added = collision ? { ...item, id: newId(), originId: item.id } : { ...item };
     merged.notes.push(added); map.set(item.id, added.id);
     counts.notes.added++; if (collision) counts.notes.conflicts++;
   }
   for (const item of source.drafts) {
     const noteId = item.noteId ? map.get(item.noteId) || item.noteId : null;
-    const related = merged.drafts.filter(d => root(d) === root(item));
+    const related = relatedTo(merged.drafts, item, draftIds);
     if (related.some(d => sameFields(d, item) && d.noteId === noteId)) { counts.drafts.skipped++; continue; }
-    merged.drafts.push({ ...item, id: newId(), slot: 'recovery', noteId, originId: root(item) });
+    const preserveId = item.slot === 'recovery' && !merged.drafts.some(d => d.id === item.id);
+    merged.drafts.push({ ...item, id: preserveId ? item.id : newId(), slot: 'recovery', noteId, originId: preserveId ? item.originId || item.id : item.id });
     counts.drafts.added++; if (related.length) counts.drafts.conflicts++;
   }
   return { revision: current.revision, state: state(merged), counts };

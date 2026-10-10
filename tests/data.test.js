@@ -132,3 +132,23 @@ test('a backup with existing imported copies preserves note IDs on a clean-devic
   assert.equal(merge.counts.notes.conflicts, 0);
   assert.deepEqual(merge.state.notes, source.notes);
 });
+test('distinct notes and drafts in one backup are retained even when a copy was edited to identical content', async () => {
+  const f = fixture();
+  const first = await f.store.saveNote(input);
+  const source = makeBackup(f.store.read());
+  const copy = { ...first, id: 'copy', originId: first.id };
+  const fresh = fixture();
+  for (const notes of [[first, copy], [copy, first]]) {
+    const result = mergeBackup(fresh.store.read(), { ...source, notes });
+    assert.equal(result.state.notes.length, 2);
+    assert.deepEqual(result.state.notes.map(n => n.id), notes.map(n => n.id));
+  }
+  const d = { ...input, id: 'new', slot: 'new', noteId: null, updatedAt: first.updatedAt };
+  const drafts = [d, { ...d, id: 'draft-copy', slot: 'recovery', originId: 'new' }];
+  const merged = mergeBackup(fresh.store.read(), { ...source, drafts });
+  assert.equal(merged.state.drafts.length, 2);
+  await fresh.store.restore(merged);
+  const repeated = mergeBackup(fresh.store.read(), { ...source, drafts });
+  assert.equal(repeated.counts.drafts.added, 0);
+  assert.equal(repeated.counts.notes.added, 0);
+});

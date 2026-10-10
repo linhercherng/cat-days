@@ -3,7 +3,7 @@ import { addDays, weekDates, monthCells, weekday, dateLabel } from './dates.js';
 import { MOODS } from './schema.js';
 export const dayURL = date => `#day?date=${date}`;
 export const editorURL = date => `#editor?date=${date}`;
-const notesFor = (state, date) => state.notes.filter(n => n.date === date).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
+const notesFor = (state, date) => state.notes.filter(n => n.date === date).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 export function noteCard(note, detailed = false) {
   const card = link('', detailed ? `#editor?id=${encodeURIComponent(note.id)}` : dayURL(note.date), `note ${detailed ? 'day-note' : ''} ${note.mood || note.moodText ? 'note-peach' : ''}`);
   card.setAttribute('aria-label', `${detailed ? '編輯記事' : '查看這一天'}：${(note.text || note.moodText || MOODS[note.mood]).slice(0, 60)}`);
