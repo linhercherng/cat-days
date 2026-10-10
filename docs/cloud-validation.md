@@ -4,6 +4,7 @@
 
 ## 已完成
 
+- 2026-10-11 使用者確認記憶體登入取捨，並回報 Supabase 專案與 Google OAuth 都已設定。公開連線設定尚未填入本機；資料庫 migration、允許名單與實際登入仍待驗證。
 - Google PKCE 回呼、公開設定檢查、登入憑證記憶體保存與十分钟 PKCE verifier 到期清理。依 SDK 2.108.1 實際介面製作，SDK 封裝在 repo，不從 CDN 載入。
 - 私人單帳號允許名單、Google verified email 檢查、RLS、禁用直接資料表寫入；所有寫入走權限／版本檢查 RPC。
 - 單帳號交易鎖與遞增游標、200 筆分頁、伺服器版本 CAS、操作冪等及遺失回覆重試。
@@ -30,7 +31,6 @@
 - 真實 Google OAuth 同意／回呼／重新登入／session 到期與 project pause 操作。
 - 真實 Supabase/PostgREST API 上的另一帳號及匿名直接請求驗證。
 - 使用者兩台電腦同帳號驗收、iOS Safari／Android Chrome 實機。
-- 使用者回覆重開網站需再登入的取捨；若需長期登入，另訂部署與 cookie 架構。
 
 隔離 SQL 與模擬 Google 身分測試不能替代以上關卡。配置未提供前，不標示跨裝置同步正式完成。
 
