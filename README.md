@@ -45,5 +45,6 @@ Node.js 22 或更新版本可執行 `npm test`（無需安裝依賴）；`npm ru
 - [跨裝置同步定稿、製作順序與驗收](docs/cloud-sync-specification.md)
 - [Supabase 與 Google 啟用步驟](docs/cloud-setup.md)
 - [同步實作與驗證紀錄](docs/cloud-validation.md)
+- [兩台電腦同步驗收清單](docs/cloud-acceptance.md)
 
 GitHub Pages 使用 `main` 分支根目錄發布。個人記事、草稿、備份與允許登入的 email 不納入公開 repository。未登入資料只在目前瀏覽器；同步啟用且登入時正式記事保存在自己的 Supabase，草稿依帳號留在各裝置。登入 token 只在記憶體，重開需再登入。備份沒有加密。

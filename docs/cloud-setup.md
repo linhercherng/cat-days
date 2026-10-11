@@ -20,13 +20,21 @@
 5. Supabase Authentication → Sign In / Providers → Google：填入 Google client ID、client secret 並啟用。Secret 只填在 Supabase 控制台。
 6. Supabase Authentication → URL Configuration：Site URL 設為 `https://linhercherng.github.io/cat-days/`，Redirect URLs 加入完全相同網址。此專案已保存並重新載入確認。驗收 localhost 時另加該測試來源的根網址；不要使用全域萬用字元。
 7. 提供 Supabase project URL 與 **publishable key**（`sb_publishable_...`）供網站設定；這兩項是公開前端設定。不要提供 `sb_secret_...`、`service_role`、access token 或資料庫密碼。新 key 可於 Project Settings → API Keys 取得。
-8. 真實專案驗證指定帳號可登入、另一帳號／匿名不可讀寫，再將 URL 與 publishable key 填進 `cloud-config.js`，部署 GitHub Pages。允許 email 留在資料庫，不放前端。
+8. 完成資料庫權限、Google Provider、返回網址及程式測試後，將 URL 與 publishable key 填進 `cloud-config.js`，部署 GitHub Pages 同步驗收版。此專案的正式根網址是唯一允許返回網址，因此真實 Google 回呼須在同步程式部署後驗證。先確認部署版本，再驗證指定帳號登入／讀寫及匿名拒絕；另一帳號的真實登入測試需由帳號持有人操作。允許 email 留在資料庫，不放前端。這一步尚不代表兩台電腦已驗收。
 9. 首次登入 →「帳號與同步」→ 下載舊本機備份 → 確认下載成功 → 預覽 → 確認匯入。不要清除原本機記事。
 10. 第二台電腦開啟同一網站、登入同一 Google 帳號，按「立即同步」，完成新增／修改／刪除驗收。
 
 登入憑證只在記憶體；重新整理需再登入。頁面回到前景、每分鐘及保存後自動查變動。連線失敗保留草稿，請重試。Supabase 免費專案暫停時，先在 Dashboard 恢復服務。定期從「資料與備份」下載 JSON。
 
 驗收時用新建的測試記事，避免刪除真實日記。相同編號衝突不覆蓋，已刪資料只保留最小同步標記。V2 備份包括此裝置草稿與刪除標記，没有登入憑證。
+
+兩台電腦的完整操作與通過條件見 [同步驗收清單](cloud-acceptance.md)。
+
+## 部署與回退
+
+GitHub Pages 發布 `main` 根目錄，合併前記錄 `main` 的版本及合併提交。合併後核對 Pages 工作成功、線上 `app.js`／`cloud-config.js` 與提交內容一致，並在瀏覽器確認同步入口及真實 OAuth 回呼。既有本機記事不自動上傳。
+
+若部署後出現登入、資料完整性或權限問題，停止匯入與正式記事操作，先保存裝置草稿／備份；修復或以 Git revert 回復網站合併提交，再核對 Pages 成功及線上版本。回退只修改網站，不刪除 Supabase 資料表、雲端記事或本機資料。舊本機版本無法顯示新雲端記事；修復同步版本後可再登入取得，不能把暫時不可見當成資料刪除。
 
 回報設定完成時，只需說明已完成的步驟，並提供 project URL 和 publishable key。你可以在本機修改設定檔後告知完成；不必把秘密傳進對話。
 
