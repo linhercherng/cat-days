@@ -1,6 +1,6 @@
 # 同步製作驗證紀錄
 
-日期：2026-10-11。分支：feature/cloud-sync。正式網站尚未啟用雲端；沒有讀取或搬移使用者真實記事。
+日期：2026-10-11。同步版本準備部署；尚未讀取或搬移使用者真實記事。真實登入及實機驗收以後續紀錄為準。
 
 ## 已完成
 
@@ -29,10 +29,10 @@
 | 真實資料庫角色模擬 | 在可回復交易中切換 authenticated／非允許使用者 ID，`cat_days_allowed=false`，記事 SELECT 可見筆數為 0；交易已 rollback。這不是另一個 Google 帳號的完整登入測試 |
 | 真實登入返回設定 | Site URL 與唯一 Redirect URL 均為 `https://linhercherng.github.io/cat-days/`，重新載入後仍正確，沒有萬用字元 |
 | 私有表 RLS 回歸 | migration 明確啟用私有三表 RLS，與控制台安裝結果一致；隔離 PostgreSQL 權限／CRUD／同步與八連線併發測試再跑通過 |
+| Google Provider 設定 | 使用者回覆 Google 測試使用者及 Supabase 憑證已儲存；`/auth/v1/settings` 即時回覆 HTTP 200、`external.google=true`。秘密由使用者在控制台輸入，未加入程式、文件或 GitHub |
 
 ## 仍待驗收
 
-- `/auth/v1/settings` 最新回覆 HTTP 200、`external.google=false`。Google Provider 仍待使用者填入 Client ID／Secret、啟用並保存；秘密只由使用者填入 Provider 頁面。
 - 真實 Google OAuth 同意／回呼／重新登入／session 到期與 project pause 操作。
 - 真實 Supabase/PostgREST API 上指定帳號及另一 Google 帳號的登入／權限驗證。
 - 使用者兩台電腦同帳號驗收、iOS Safari／Android Chrome 實機。

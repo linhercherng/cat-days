@@ -1,8 +1,8 @@
 # 貓咪手帳：雲端啟用步驟
 
-目前程式已提供同步功能，feature/cloud-sync 的 cloud-config.js 已填入使用者提供的公開設定，正式網站尚未部署此分支。必須完成真實設定與驗收，才能讓兩台電腦讀到相同資料。
+目前程式已提供同步功能，cloud-config.js 已填入使用者提供的公開設定，Google Provider 已啟用，進入正式網站部署與登入驗證階段。兩台電腦實機驗收仍須完成。
 
-2026-10-11 已在專案 `osvbnbzadifspnbgclld` 安裝同步資料表與函式，四張表均啟用 RLS，唯一帳號允許名單及 Site／Redirect URL 已保存。匿名讀寫 API 回覆 401 拒絕；Auth API 顯示 Google Provider 仍待啟用。Supabase 控制台帳號及專案成員名單，不等於本網站的 Google Provider 與資料庫允許名單。
+2026-10-11 已在專案 `osvbnbzadifspnbgclld` 安裝同步資料表與函式，四張表均啟用 RLS，唯一帳號允許名單及 Site／Redirect URL 已保存。匿名讀寫 API 回覆 401 拒絕；使用者儲存 Google Client ID／Secret 與測試使用者後，Auth API 確認 `external.google=true`。Supabase 控制台帳號及專案成員名單，不等於本網站的 Google Provider 與資料庫允許名單。
 
 此專案 Google OAuth 的 Authorized redirect URI：`https://osvbnbzadifspnbgclld.supabase.co/auth/v1/callback`。網站 Site URL 與允許的 Redirect URL：`https://linhercherng.github.io/cat-days/`。
 
