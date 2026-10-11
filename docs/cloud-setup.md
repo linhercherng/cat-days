@@ -1,6 +1,6 @@
 # 貓咪手帳：雲端啟用步驟
 
-目前程式已提供同步功能，cloud-config.js 已填入使用者提供的公開設定，Google Provider 已啟用，進入正式網站部署與登入驗證階段。兩台電腦實機驗收仍須完成。
+同步版本已部署至正式網站，cloud-config.js 已填入使用者提供的公開設定，Google Provider 已啟用；指定帳號真實登入與兩分頁雲端新增／修改讀取通過。兩台電腦實機驗收仍須完成。
 
 2026-10-11 已在專案 `osvbnbzadifspnbgclld` 安裝同步資料表與函式，四張表均啟用 RLS，唯一帳號允許名單及 Site／Redirect URL 已保存。匿名讀寫 API 回覆 401 拒絕；使用者儲存 Google Client ID／Secret 與測試使用者後，Auth API 確認 `external.google=true`。Supabase 控制台帳號及專案成員名單，不等於本網站的 Google Provider 與資料庫允許名單。
 
@@ -16,7 +16,7 @@
    on conflict (singleton) do update set email = excluded.email;
    ```
 
-4. Google Cloud Console 建立 OAuth 網頁應用程式，設定同意畫面、測試使用者或發佈狀態；只使用 `openid`、`email`、`profile`。授權來源為 `https://linhercherng.github.io`；授權重新導向 URI 使用 Supabase Google Provider 頁面顯示的 `https://PROJECT_REF.supabase.co/auth/v1/callback`。Google 測試模式可能需要把你的帳號加入測試使用者。
+4. Google Cloud Console 建立 OAuth 網頁應用程式，設定同意畫面與目標對象；只使用 `openid`、`email`、`profile`。授權來源為 `https://linhercherng.github.io`；授權重新導向 URI 使用 Supabase Google Provider 頁面顯示的 `https://PROJECT_REF.supabase.co/auth/v1/callback`。目前僅基本身分權限，依 [Google 測試模式例外](https://support.google.com/cloud/answer/15549945?hl=en) 不必在測試使用者名單才能登入；如果未來新增其他權限則須重新確認。網站唯一帳號資料權限由資料庫 RLS 與私有名單控制。
 5. Supabase Authentication → Sign In / Providers → Google：填入 Google client ID、client secret 並啟用。Secret 只填在 Supabase 控制台。
 6. Supabase Authentication → URL Configuration：Site URL 設為 `https://linhercherng.github.io/cat-days/`，Redirect URLs 加入完全相同網址。此專案已保存並重新載入確認。驗收 localhost 時另加該測試來源的根網址；不要使用全域萬用字元。
 7. 提供 Supabase project URL 與 **publishable key**（`sb_publishable_...`）供網站設定；這兩項是公開前端設定。不要提供 `sb_secret_...`、`service_role`、access token 或資料庫密碼。新 key 可於 Project Settings → API Keys 取得。

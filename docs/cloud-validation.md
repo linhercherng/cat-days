@@ -1,6 +1,6 @@
 # 同步製作驗證紀錄
 
-日期：2026-10-11。同步版本準備部署；尚未讀取或搬移使用者真實記事。真實登入及實機驗收以後續紀錄為準。
+日期：2026-10-11。同步版本已部署並通過真實 Google 登入／雲端新增與修改；尚未搬移使用者原本機記事。兩台實體電腦驗收尚未完成。
 
 ## 已完成
 
@@ -30,13 +30,22 @@
 | 真實登入返回設定 | Site URL 與唯一 Redirect URL 均為 `https://linhercherng.github.io/cat-days/`，重新載入後仍正確，沒有萬用字元 |
 | 私有表 RLS 回歸 | migration 明確啟用私有三表 RLS，與控制台安裝結果一致；隔離 PostgreSQL 權限／CRUD／同步與八連線併發測試再跑通過 |
 | Google Provider 設定 | 使用者回覆 Google 測試使用者及 Supabase 憑證已儲存；`/auth/v1/settings` 即時回覆 HTTP 200、`external.google=true`。秘密由使用者在控制台輸入，未加入程式、文件或 GitHub |
+| 正式 Pages 部署 | PR #1 合併提交 `a81700ecf5ae8aeff7503d83db4644511e8cd259`；[Pages 工作 38097524664](https://github.com/linhercherng/cat-days/actions/runs/38097524664) 成功。線上 app.js、cloud-config.js、cloud-auth.js、cloud-store.js 及 SDK 均 HTTP 200，正規化行尾後與部署提交一致 |
+| 真實 Google 與 Supabase | 指定帳號成功經 Google 同意頁與 PKCE 回呼，通過 `cat_days_allowed` 及首次變動查詢；介面進入雲端模式並顯示「已同步」 |
+| 正式雲端記事讀寫 | A 分頁新增一筆明確標示的測試記事，B 分頁重新 Google 登入後可讀取；B 修改相同記事，A「立即同步」後讀到相同修改，仍只有一筆。這是同一 Chrome 的兩個分頁，不是兩台實體電腦 |
+| 記憶體登入 | B 在同步頁重新整理後顯示未登入、原本機模式；再次 Google 登入後成功取得最新測試記事。已儲存雲端記事不依賴分頁記憶體快取 |
+
+Google Audience 重新載入仍顯示測試使用者 0。此應用程式只請求 `openid`、`email`、`profile`，符合 [Google 基本登入權限例外](https://support.google.com/cloud/answer/15549945?hl=en)，不需要在測試名單才能完成基本登入；實際指定帳號已成功。網站雲端記事的唯一帳號限制由私有允許名單與 RLS／RPC 驗證實施，不能依賴 Google 的測試名單代替。
+
+已保留 2026-10-11 一筆 `同步驗收測試`，供使用者實機讀取及刪除验收，未操作原本機記事匯入，也未刪除任何真實日記。
 
 ## 仍待驗收
 
-- 真實 Google OAuth 同意／回呼／重新登入／session 到期與 project pause 操作。
-- 真實 Supabase/PostgREST API 上指定帳號及另一 Google 帳號的登入／權限驗證。
+- session 到期與 project pause 操作。
+- 另一 Google 帳號的真實登入／權限驗證；匿名 API 與未允許資料庫角色測試已通過，未使用使用者的其他 Google 帳號。
+- 正式雲端刪除、衝突與原本機記事匯入驗收；隔離 SQL 與模擬流程已通過，但不可代替正式驗收。
 - 使用者兩台電腦同帳號驗收、iOS Safari／Android Chrome 實機。
 
-隔離 SQL、資料庫角色模擬與模擬 Google 身分測試不能替代以上關卡。尚未完成真實 OAuth 與兩台電腦驗收，不標示跨裝置同步正式完成。
+隔離 SQL、資料庫角色模擬與模擬 Google 身分測試不能替代以上關卡。真實 OAuth 與基本讀寫已完成；兩台實體電腦及完整資料操作驗收仍待使用者，不標示跨裝置同步驗收完成。
 
 重現：`npm test`、`npm run check`、`npm run build:vendor`、`python scripts/test-database.py`。最後一項只建立隨機命名的測試容器並自動清理，不能用作真實專案安裝。
