@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant"><meta charset="utf-8"><title>cat-days isolated regression</title>
+<body><pre id="results">RUNNING</pre><div id="fixture"></div>
+<script type="module">
+import {createEditor} from '../src/editor.js';
+import {createCloudStore} from '../src/cloud-store.js';
+import {createCloudDataPanel} from '../src/cloud-data-panel.js';
+import {parseCloudBackup} from '../src/cloud-backup.js';
+import {MAX_BACKUP_BYTES} from '../src/backup.js';
+
+// Local synthetic data only. No auth, app startup or external RPC is loaded.
+const output=document.querySelector('#results'),host=document.querySelector('#fixture'),results=[];
+const at='2026-10-11T00:00:00.000Z';
+const note={id:'a',date:'2026-10-11',text:'測試貓🙂',mood:'',moodText:'',createdAt:at,updatedAt:at,version:1,changeSeq:1,deletedAt:null};
+const html=new DOMParser().parseFromString(await (await fetch('../index.html')).text(),'text/html');
+html.querySelectorAll('script').forEach(s=>s.remove());
+const assert=(ok,message)=>{if(!ok)throw Error(message);};
+const until=async predicate=>{for(let i=0;i<100;i++){if(predicate())return;await new Promise(r=>setTimeout(r,10));}throw Error('UI timeout');};
+const click=text=>{const b=[...host.querySelectorAll('button')].find(b=>b.textContent===text);assert(b,`missing ${text}`);b.click();};
+const mount=()=>{host.innerHTML=html.body.innerHTML;host.querySelectorAll('[hidden]').forEach(n=>{if(n.id==='editor'||n.id==='data')n.hidden=false;});};
+window.addEventListener('error',e=>results.push(`ERROR ${e.message}`));
+window.addEventListener('unhandledrejection',e=>results.push(`ERROR ${e.reason}`));
+try {
+  for(const [label,date,deleted] of [['moved','2026-10-15',false],['same day',note.date,false],['deleted',note.date,true]]) {
+    mount();let latest=note;const disk=new Map(),routes=[];
+    const store=createCloudStore({owner:'browser-test',storage:{getItem:k=>disk.get(k)??null,setItem:(k,v)=>disk.set(k,v)},rpc:async(name,args)=>{
+      if(name==='cat_days_changes')return {records:latest.changeSeq>args.p_after?[latest]:[],cursor:latest.changeSeq,hasMore:false};
+      return {status:'conflict',record:{...note,date:'2026-10-12',version:2,changeSeq:2}};
+    }});
+    await store.sync();
+    const editor=createEditor(store,{ask:async()=>true,status:()=>{},go:r=>routes.push(r),today:()=>note.date});
+    editor.open(new URLSearchParams('id=a'),store.read(),'#home');
+    host.querySelector('#note-date').value='2026-10-20';
+    host.querySelector('#note-text').value='未儲存草稿';
+    host.querySelector('#note-text').dispatchEvent(new Event('input',{bubbles:true}));await editor.flush();
+    host.querySelector('#note-form').requestSubmit();
+    await until(()=>!host.querySelector('#conflict-choice').hidden);
+    latest={...note,date,version:3,changeSeq:3,...(deleted?{date:null,text:null,mood:null,moodText:null,deletedAt:at}:{text:'接受前又修改'})};
+    click('使用雲端版本');await until(()=>routes.length);
+    assert(routes[0]===`#day?date=${date}`,`${label}: wrong date ${routes[0]}`);
+    assert(store.read().drafts.length===0,`${label}: draft not cleared`);
+    assert(host.querySelector('#conflict-choice').hidden,`${label}: conflict remains`);
+    results.push(`PASS cloud conflict ${label}: ${routes[0]}`);
+  }
+  mount();let notes=[note],syncs=0,blobs=[],messages=[];
+  const store={email:'browser@example.invalid',read:()=>({notes,drafts:[]}),records:()=>notes,sync:async()=>{syncs++;}};
+  const createURL=URL.createObjectURL;
+  URL.createObjectURL=blob=>{blobs.push(blob);return createURL.call(URL,blob);};
+  document.addEventListener('click',e=>{if(e.target.matches('a[download]'))e.preventDefault();},true);
+  const panel=createCloudDataPanel(store,{ask:async()=>true,status:m=>messages.push(m)});panel.render();
+  click('同步後下載 JSON 備份');await until(()=>messages.length);
+  const raw=await blobs[0].text();assert(parseCloudBackup(raw).notes[0].text===note.text,'download cannot restore');
+  assert(blobs[0].size===new TextEncoder().encode(raw).length,'Blob size mismatch');
+  results.push(`PASS actual UTF-8 download Blob: ${blobs[0].size} bytes, V2 round trip`);
+  const file=host.querySelector('#cloud-backup-file');
+  for(const [label,value] of [['valid',raw],['oversized','x'.repeat(MAX_BACKUP_BYTES+1)],['malformed','{']]) {
+    const transfer=new DataTransfer();transfer.items.add(new File([value],`${label}.json`,{type:'application/json'}));
+    file.files=transfer.files;const before=syncs;file.dispatchEvent(new Event('change',{bubbles:true}));
+    await until(()=>label==='valid'?[...host.querySelectorAll('button')].some(b=>b.textContent==='確認合併到雲端'):host.querySelector('#data-content [role="alert"]'));
+    assert(syncs===before+(label==='valid'?1:0),`${label}: unexpected sync`);
+    assert(notes.length===1 && notes[0].text===note.text,`${label}: data changed`);
+    results.push(`PASS actual file selection ${label}; data unchanged`);
+  }
+  notes=Array.from({length:100},(_,i)=>({...note,id:`n${i}`,text:'貓'.repeat(20000)}));panel.render();
+  const count=blobs.length;messages=[];click('同步後下載 JSON 備份');await until(()=>messages.length);
+  assert(blobs.length===count && /5 MiB/.test(messages[0]),'oversized export downloaded');
+  assert(notes.length===100,'oversized export altered notes');
+  results.push('PASS oversized export: no Blob, error shown, notes preserved');
+  output.textContent=`PASS ${results.length} browser checks\n${results.join('\n')}`;
+}catch(e){output.textContent=`FAIL ${e.stack}\n${results.join('\n')}`;}
+</script></body></html>

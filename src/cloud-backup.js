@@ -1,8 +1,7 @@
 import {backup, draft, note, sameFields, LIMIT} from './schema.js';
-import {MAX_BACKUP_BYTES} from './backup.js';
-import {cloudRecord} from './cloud-store.js';
+import {assertBackupSize, serializeBackup} from './backup.js';
 export function parseCloudBackup(raw) {
-  if (typeof raw !== 'string' || new TextEncoder().encode(raw).length > MAX_BACKUP_BYTES) throw Error('備份檔不得超過 5 MB。');
+  assertBackupSize(raw);
   let value; try {value=JSON.parse(raw);} catch {throw Error('無法讀取 JSON 備份。');}
   if (value?.version === 1) return backup(value);
   if (value?.app !== 'cat-days' || value.version !== 2 || !Array.isArray(value.notes) || !Array.isArray(value.tombstones) || !Array.isArray(value.drafts)
@@ -15,8 +14,10 @@ export function parseCloudBackup(raw) {
   return {app:'cat-days',version:2,exportedAt:value.exportedAt,notes,drafts,tombstones};
 }
 export function makeCloudBackup(store) {
-  return {app:'cat-days',version:2,exportedAt:new Date().toISOString(),notes:store.read().notes.map(note),
-    tombstones:store.records().filter(n=>n.deletedAt).map(({id,version,deletedAt})=>({id,version,deletedAt})),drafts:store.read().drafts.map(draft)};
+  const current=store.read();
+  const value={app:'cat-days',version:2,exportedAt:new Date().toISOString(),notes:current.notes.map(note),
+    tombstones:store.records().filter(n=>n.deletedAt).map(({id,version,deletedAt})=>({id,version,deletedAt})),drafts:current.drafts.map(draft)};
+  return parseCloudBackup(serializeBackup(value));
 }
 export function previewCloudImport(records,incoming,{restore=false}={}) {
   const sourceIds=new Set(incoming.notes.map(n=>n.id));

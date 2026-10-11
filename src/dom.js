@@ -1,3 +1,4 @@
+import { serializeBackup } from './backup.js';
 export const $ = selector => document.querySelector(selector);
 export function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
@@ -18,7 +19,7 @@ export function icon(name) {
 export const link = (text, href, className = '') => el('a', { href, class: className }, text);
 export const button = (text, onclick, className = 'text-button', attrs = {}) => el('button', { type: 'button', class: className, onclick, ...attrs }, text);
 export function download(value, filename, raw = false) {
-  const url = URL.createObjectURL(new Blob([raw ? value : JSON.stringify(value, null, 2)], { type: 'application/json;charset=utf-8' }));
+  const url = URL.createObjectURL(new Blob([raw ? value : serializeBackup(value)], { type: 'application/json;charset=utf-8' }));
   const a = link('下載', url); a.download = filename; document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }

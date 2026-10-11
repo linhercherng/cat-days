@@ -29,7 +29,15 @@ export function createEditor(store, { ask, status, go, today }) {
     },'primary'),button('使用雲端版本',async()=>{
       if(ctx.busy || !await ask('捨棄目前草稿，使用雲端版本？','目前輸入會移除，保留雲端最新狀態（也可能已刪除）。','使用雲端版本'))return;
       busy(ctx,true);await ctx.queue;
-      try {await store.sync();if(ctx.draft)await store.discardDraft(ctx.draft);ctx.unsaved=false;context=null;choice.hidden=true;status('已採用雲端最新狀態。');go(dayURL(input().date));}
+      try {
+        await store.sync();
+        const noteId=ctx.note?.id || ctx.draft?.savedId || ctx.noteId;
+        const latest=store.read().notes.find(n=>n.id===noteId);
+        // A deleted note has no current date; return to its original day.
+        const date=latest?.date || ctx.note?.date || input().date;
+        if(ctx.draft)await store.discardDraft(ctx.draft);
+        ctx.unsaved=false;context=null;choice.hidden=true;status('已採用雲端最新狀態。');go(dayURL(date));
+      }
       catch(e){error(e.message);}finally{busy(ctx,false);}
     }));
   }

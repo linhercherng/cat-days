@@ -1,14 +1,34 @@
 import { backup, state, sameFields } from './schema.js';
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
+export function assertBackupSize(raw, message = '備份檔不得超過 5 MB。') {
+  if (typeof raw !== 'string' || raw.length > MAX_BACKUP_BYTES || new TextEncoder().encode(raw).length > MAX_BACKUP_BYTES) throw new Error(message);
+}
+export function serializeBackup(value) {
+  const message = '備份超過 5 MiB，未產生下載檔案。原資料仍保留；請先整理記事與草稿後再重試。';
+  let stringBytes = 0;
+  // Stop large exports before building the full JSON; strings alone are a lower
+  // bound. The final check also counts indentation, keys and punctuation.
+  const raw = JSON.stringify(value, (_key, item) => {
+    if (typeof item === 'string') {
+      stringBytes += new TextEncoder().encode(JSON.stringify(item)).length;
+      if (stringBytes > MAX_BACKUP_BYTES) throw new Error(message);
+    }
+    return item;
+  }, 2);
+  assertBackupSize(raw, message);
+  return raw;
+}
 export function parseBackup(raw) {
-  if (typeof raw !== 'string' || new TextEncoder().encode(raw).length > MAX_BACKUP_BYTES) throw new Error('備份檔不得超過 5 MB。');
+  assertBackupSize(raw);
   let value;
   try { value = JSON.parse(raw); } catch { throw new Error('無法讀取 JSON 備份，請確認檔案完整。'); }
   return backup(value);
 }
 export function makeBackup(current) {
   const data = state(current);
-  return backup({ app: 'cat-days', version: 1, exportedAt: new Date().toISOString(), notes: data.notes, drafts: data.drafts });
+  const result = backup({ app: 'cat-days', version: 1, exportedAt: new Date().toISOString(), notes: data.notes, drafts: data.drafts });
+  serializeBackup(result);
+  return result;
 }
 export function mergeBackup(current, incoming, newId = () => crypto.randomUUID()) {
   const merged = state(current), source = backup(incoming);
