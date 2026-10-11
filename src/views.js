@@ -9,7 +9,7 @@ export function noteCard(note, detailed = false) {
   const card = link('', detailed ? `#editor?id=${encodeURIComponent(note.id)}` : dayURL(note.date), `note ${detailed ? 'day-note' : ''} ${note.mood || note.moodText ? 'note-peach' : ''}`);
   card.setAttribute('aria-label', `${detailed ? '編輯記事' : '查看這一天'}：${(note.text || note.moodText || MOODS[note.mood]).slice(0, 60)}`);
   if (note.mood) card.append(el('div', { class: 'note-meta' }, el('span', { class: 'mood-chip', 'aria-hidden': true }, note.mood), `${MOODS[note.mood]} · 心情記錄`));
-  if (note.originId) card.append(el('span', { class: 'pill' }, '匯入副本'));
+  if (note.originId) card.append(el('span', { class: 'pill' }, '保留副本'));
   const summary = value => !detailed && value.length > 160 ? `${value.slice(0, 160)}…` : value;
   if (note.text) card.append(el('p', {}, summary(note.text)));
   if (note.moodText) card.append(el('p', { class: note.text ? 'note-secondary' : '' }, summary(note.moodText)));
