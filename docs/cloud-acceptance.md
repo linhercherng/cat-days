@@ -1,6 +1,6 @@
 # 兩台電腦同步驗收
 
-狀態：等待 Google Provider 設定、同步版本部署與真實登入驗證。本文是操作清單，不代表驗收已通過。
+本文是使用者兩台實體電腦的操作清單，不代表驗收已通過。部署與登入驗證結果見 cloud-validation.md。
 
 網站：https://linhercherng.github.io/cat-days/#sync
 
